@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>실습자료실 — 인공지능 만들기 교과서</title>
+<meta name="description" content="『인공지능 만들기 교과서』 실습코드와 실습데이터, 정오표, 코드 갱신 안내를 제공합니다.">
+
+<meta property="og:title" content="실습자료실 — 인공지능 만들기 교과서">
+<meta property="og:description" content="실습코드와 실습데이터, 정오표, 코드 갱신 안내">
+<meta property="og:type" content="website">
+
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/variable/pretendardvariable-dynamic-subset.min.css">
+
+<style>
+:root{
+  --ink:#16202b;
+  --ink-soft:#4a5966;
+  --ink-faint:#8b98a3;
+  --paper:#f7f8f6;
+  --surface:#ffffff;
+  --rule:#dfe4e3;
+  --grid:#e6eceb;
+  --teal:#20605c;
+  --teal-bright:#2d8079;
+  --amber:#9a6410;
+  --amber-bg:#fdf6e8;
+  --green:#3d7a45;
+
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Menlo, Consolas, "D2Coding", monospace;
+  --sans: "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+          "Apple SD Gothic Neo", "Malgun Gothic", system-ui, sans-serif;
+
+  --wrap: 60rem;
+}
+
+*,*::before,*::after{box-sizing:border-box}
+
+html{-webkit-text-size-adjust:100%}
+
+body{
+  margin:0;
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--sans);
+  font-size:17px;
+  line-height:1.75;
+  word-break:keep-all;
+  overflow-wrap:break-word;
+}
+
+.wrap{max-width:var(--wrap);margin:0 auto;padding:0 1.5rem}
+
+a{color:var(--teal);text-underline-offset:.2em}
+a:focus-visible,button:focus-visible{
+  outline:2.5px solid var(--teal-bright);
+  outline-offset:3px;
+  border-radius:2px;
+}
+
+/* ---------- eyebrow / labels ---------- */
+.eyebrow{
+  font-family:var(--mono);
+  font-size:.72rem;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  margin:0 0 .9rem;
+}
+
+/* ---------- header ---------- */
+.masthead{
+  background:var(--surface);
+  border-bottom:1px solid var(--rule);
+}
+.masthead-inner{
+  display:flex;
+  align-items:center;
+  gap:2.25rem;
+  padding:3.25rem 1.5rem 2.75rem;
+  max-width:var(--wrap);
+  margin:0 auto;
+}
+.pixelgrid{
+  flex:0 0 auto;
+  display:grid;
+  grid-template-columns:repeat(28,1fr);
+  width:120px;
+  height:120px;
+  gap:1px;
+}
+.pixelgrid i{
+  background:var(--grid);
+  border-radius:.5px;
+}
+.pixelgrid i.on{background:var(--ink)}
+
+.masthead h1{
+  margin:0;
+  font-size:clamp(1.65rem,5vw,2.3rem);
+  font-weight:800;
+  letter-spacing:-.03em;
+  line-height:1.25;
+}
+.masthead .book{
+  margin:.55rem 0 0;
+  color:var(--ink-soft);
+  font-size:.98rem;
+}
+
+/* ---------- sections ---------- */
+section{padding:3.5rem 0}
+section + section{border-top:1px solid var(--rule)}
+h2{
+  margin:0 0 .5rem;
+  font-size:1.3rem;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+.lede{margin:0 0 1.75rem;color:var(--ink-soft)}
+
+/* ---------- folder cards ---------- */
+.folders{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:1rem;
+}
+.folder{
+  display:block;
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-left:4px solid var(--teal);
+  border-radius:5px;
+  padding:1.6rem 1.5rem;
+  text-decoration:none;
+  color:inherit;
+  transition:border-color .15s ease, transform .15s ease, box-shadow .15s ease;
+}
+.folder:hover{
+  border-color:var(--teal-bright);
+  border-left-color:var(--teal-bright);
+  transform:translateY(-2px);
+  box-shadow:0 6px 20px -12px rgba(22,32,43,.4);
+}
+.folder .n{
+  font-family:var(--mono);
+  font-size:.72rem;
+  letter-spacing:.1em;
+  color:var(--teal);
+  display:block;
+  margin-bottom:.5rem;
+}
+.folder strong{
+  display:block;
+  font-size:1.22rem;
+  font-weight:700;
+  letter-spacing:-.02em;
+}
+.folder span.desc{
+  display:block;
+  margin-top:.35rem;
+  font-size:.92rem;
+  color:var(--ink-soft);
+  line-height:1.6;
+}
+.folder-parent{
+  margin-top:1rem;
+  font-size:.88rem;
+  color:var(--ink-faint);
+}
+
+/* ---------- steps ---------- */
+.steps{
+  list-style:none;
+  counter-reset:s;
+  margin:0;
+  padding:0;
+  display:grid;
+  gap:1.1rem;
+}
+.steps li{
+  counter-increment:s;
+  display:grid;
+  grid-template-columns:2rem 1fr;
+  gap:.9rem;
+  align-items:start;
+}
+.steps li::before{
+  content:counter(s,decimal-leading-zero);
+  font-family:var(--mono);
+  font-size:.8rem;
+  color:var(--teal);
+  padding-top:.32rem;
+}
+.steps b{font-weight:700}
+.steps p{margin:.15rem 0 0;color:var(--ink-soft);font-size:.95rem}
+
+/* ---------- notice ---------- */
+.notice{
+  background:var(--amber-bg);
+  border:1px solid #efe0c2;
+  border-radius:5px;
+  padding:1.35rem 1.5rem;
+  font-size:.95rem;
+}
+.notice p{margin:0}
+.notice p + p{margin-top:.6rem}
+.notice b{color:var(--amber)}
+
+/* ---------- table ---------- */
+.tablewrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+table{
+  width:100%;
+  border-collapse:collapse;
+  font-size:.93rem;
+  min-width:34rem;
+}
+caption{
+  text-align:left;
+  font-size:.85rem;
+  color:var(--ink-faint);
+  padding-bottom:.7rem;
+}
+th,td{
+  text-align:left;
+  padding:.75rem .85rem;
+  border-bottom:1px solid var(--rule);
+  vertical-align:top;
+}
+thead th{
+  font-family:var(--mono);
+  font-size:.72rem;
+  letter-spacing:.08em;
+  text-transform:uppercase;
+  color:var(--ink-faint);
+  font-weight:500;
+  border-bottom:1.5px solid var(--ink);
+  white-space:nowrap;
+}
+td.loc{font-family:var(--mono);font-size:.85rem;white-space:nowrap;color:var(--teal)}
+td.was{color:var(--ink-soft);text-decoration:line-through}
+
+.empty{
+  border:1px dashed var(--rule);
+  border-radius:5px;
+  padding:2rem 1.5rem;
+  text-align:center;
+  color:var(--ink-faint);
+  font-size:.95rem;
+}
+
+/* ---------- status ---------- */
+.status{
+  display:flex;
+  flex-wrap:wrap;
+  align-items:center;
+  gap:.7rem 1.1rem;
+  background:var(--surface);
+  border:1px solid var(--rule);
+  border-radius:5px;
+  padding:1.15rem 1.4rem;
+  font-family:var(--mono);
+  font-size:.88rem;
+}
+.dot{
+  width:.6rem;height:.6rem;border-radius:50%;
+  background:var(--green);
+  flex:0 0 auto;
+}
+.status .k{color:var(--ink-faint)}
+.status .v{color:var(--ink)}
+
+/* ---------- footer ---------- */
+footer{
+  border-top:1px solid var(--rule);
+  padding:2.5rem 0 4rem;
+  font-size:.9rem;
+  color:var(--ink-soft);
+}
+footer p{margin:.4rem 0}
+
+/* ---------- responsive ---------- */
+@media (max-width:44rem){
+  body{font-size:16px}
+  .masthead-inner{
+    flex-direction:column;
+    align-items:flex-start;
+    gap:1.5rem;
+    padding:2.5rem 1.5rem 2rem;
+  }
+  .pixelgrid{width:84px;height:84px}
+  .folders{grid-template-columns:1fr}
+  .folder{padding:1.35rem 1.25rem}
+  section{padding:2.75rem 0}
+}
+
+/* ---------- motion ---------- */
+.pixelgrid i.on{
+  animation:ink .5s ease-out backwards;
+}
+@keyframes ink{
+  from{background:var(--grid)}
+  to{background:var(--ink)}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.001ms !important;
+    animation-iteration-count:1 !important;
+    transition-duration:.001ms !important;
+  }
+}
+</style>
+</head>
+<body>
+
+<header class="masthead">
+  <div class="masthead-inner">
+    <div class="pixelgrid" id="grid" aria-hidden="true"></div>
+    <div>
+      <p class="eyebrow">실습자료실</p>
+      <h1>인공지능 만들기 교과서</h1>
+      <p class="book">실습코드 · 실습데이터 · 정오표 · 코드 갱신 안내</p>
+    </div>
+  </div>
+</header>
+
+<main>
+
+<!-- 1. 자료 폴더 -->
+<section id="folders">
+  <div class="wrap">
+    <h2>실습자료 받기</h2>
+    <p class="lede">아래 폴더를 열면 구글 드라이브의 ‘공유 문서함’에 등록됩니다. 다음부터는 드라이브에서 바로 찾아갈 수 있습니다.</p>
+
+    <div class="folders">
+      <a class="folder" href="https://drive.google.com/drive/folders/1kImMkEVKgCcu7n7dU8-guOGb7MkqWREb">
+        <span class="n">FOLDER 01</span>
+        <strong>실습코드</strong>
+        <span class="desc">책에서 실습하는 파이썬 코드 파일(.ipynb)이 들어 있습니다.</span>
+      </a>
+      <a class="folder" href="https://drive.google.com/drive/folders/1ybMKV8sAiXjQA8hbHaFp-qF7Rg5vlpV4">
+        <span class="n">FOLDER 02</span>
+        <strong>실습데이터</strong>
+        <span class="desc">데이터 시트와 실습에 쓰이는 영상·이미지·음성 자료가 들어 있습니다.</span>
+      </a>
+    </div>
+
+    <p class="folder-parent">
+      두 폴더를 함께 담고 있는 상위 폴더는
+      <a href="https://drive.google.com/drive/folders/1dXEvlmi16QCpLlKDdsKSlX5uVrRyvy9j">여기</a>에서 열 수 있습니다.
+    </p>
+  </div>
+</section>
+
+<!-- 2. 사용 방법 -->
+<section id="howto">
+  <div class="wrap">
+    <h2>실습을 시작하기 전에</h2>
+    <p class="lede">자료실의 파일은 읽기전용입니다. 먼저 내 드라이브로 복사해야 수정하고 저장할 수 있습니다.</p>
+
+    <ol class="steps">
+      <li>
+        <div>
+          <b>실습코드 폴더를 엽니다</b>
+          <p>파일 이름은 책에 나온 것과 같습니다. 예를 들어 ‘MNIST_DNN.ipynb’처럼 표기된 파일을 찾으면 됩니다.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <b>파일을 마우스 오른쪽 클릭하고 ‘사본 만들기’를 선택합니다</b>
+          <p>사본은 ‘내 드라이브’ 또는 ‘내 드라이브/Colab Notebooks’ 폴더에 만들어집니다.</p>
+        </div>
+      </li>
+      <li>
+        <div>
+          <b>만들어진 사본을 열어 실습합니다</b>
+          <p>이제 마음대로 고치고 실행하고 저장할 수 있습니다. 원본이 남아 있으니 무엇을 바꿔도 괜찮습니다.</p>
+        </div>
+      </li>
+    </ol>
+  </div>
+</section>
+
+<!-- 3. 코드 갱신 안내 -->
+<section id="updates">
+  <div class="wrap">
+    <p class="eyebrow">UPDATES</p>
+    <h2>실습코드 갱신 안내</h2>
+    <p class="lede">머신러닝 라이브러리는 계속 업데이트됩니다. 그 때문에 책에 인쇄된 코드가 그대로 실행되지 않는 경우가 생기면 이곳에 정리합니다. 실습 중 오류가 났다면 여기를 먼저 확인해 주세요.</p>
+
+    <div class="notice">
+      <p><b>자료실의 코드가 책과 다를 수 있습니다.</b></p>
+      <p>라이브러리 변경에 맞추어 자료실 코드를 수정하는 경우, 수정한 부분에는 주석을 달아 둡니다. 항상 자료실의 코드가 최신입니다.</p>
+    </div>
+
+    <!-- 갱신 항목이 생기면 아래 empty 블록을 지우고 tablewrap 블록의 주석을 해제하세요 -->
+    <div class="empty" style="margin-top:1.5rem">
+      현재 안내할 갱신 사항이 없습니다. 책의 코드를 그대로 사용하셔도 됩니다.
+    </div>
+
+    <!--
+    <div class="tablewrap" style="margin-top:1.5rem">
+      <table>
+        <caption>최근 갱신 내역</caption>
+        <thead>
+          <tr><th>날짜</th><th>대상 파일</th><th>변경 내용</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="loc">2026-09-01</td>
+            <td>NLP_Language Model_02.ipynb</td>
+            <td>Keras 3에서 Embedding의 input_length 인자가 제거되어 해당 인자를 삭제했습니다.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    -->
+  </div>
+</section>
+
+<!-- 4. 정오표 -->
+<section id="errata">
+  <div class="wrap">
+    <p class="eyebrow">ERRATA</p>
+    <h2>정오표</h2>
+    <p class="lede">책에서 발견된 오류를 모아 둡니다. 쇄를 거듭하며 수정하고 있으나, 이미 받아 보신 책에는 반영되어 있지 않을 수 있습니다.</p>
+
+    <!-- 정오 항목이 생기면 아래 empty 블록을 지우고 tablewrap 블록의 주석을 해제하세요 -->
+    <div class="empty">
+      아직 보고된 오류가 없습니다. 오류를 발견하셨다면 아래 주소로 알려 주세요.
+    </div>
+
+    <!--
+    <div class="tablewrap">
+      <table>
+        <caption>1쇄 기준</caption>
+        <thead>
+          <tr><th>위치</th><th>잘못된 내용</th><th>올바른 내용</th><th>반영</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="loc">p.161</td>
+            <td class="was">로그함수를 적용함으로써</td>
+            <td>시그모이드 함수를 적용함으로써</td>
+            <td class="loc">2쇄</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    -->
+  </div>
+</section>
+
+<!-- 5. 점검 현황 -->
+<section id="status">
+  <div class="wrap">
+    <p class="eyebrow">STATUS</p>
+    <h2>자료 점검 현황</h2>
+    <p class="lede">실습코드가 계속 정상 동작하는지 정기적으로 점검하고 있습니다.</p>
+
+    <!-- 아래 두 span은 점검 스크립트가 자동으로 갱신합니다 -->
+    <div class="status">
+      <span class="dot" id="status-dot" aria-hidden="true"></span>
+      <span><span class="k">최종 점검일</span> <span class="v" id="checked-at">2026-08-11</span></span>
+      <span><span class="k">상태</span> <span class="v" id="check-result">전체 정상</span></span>
+      <span><span class="k">점검 대상</span> <span class="v">노트북 51 · 데이터 15</span></span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="wrap">
+    <p><strong>문의</strong> · 오류 제보나 실습 중 문제가 있으시면 <a href="mailto:MLFundamentals@gmail.com">MLFundamentals@gmail.com</a> 으로 알려 주세요.</p>
+    <p>『인공지능 만들기 교과서』 실습자료실 · 『인공지능 구조 원리 교과서』 실습편</p>
+  </div>
+</footer>
+
+<script>
+// 머리말의 픽셀 격자: MNIST 손글씨 '7'
+// 책 IV-4에서 모델이 판독했던 그 숫자입니다.
+(function () {
+  var g = document.getElementById('grid');
+  if (!g) return;
+
+  var N = 28, cells = [], on = [];
+
+  for (var r = 0; r < N; r++) {
+    for (var c = 0; c < N; c++) {
+      // 가로획
+      var bar = (r >= 6 && r <= 9) && (c >= 7 && c <= 21);
+      // 세로에 가까운 사선
+      var x = 21 - (r - 9) * 0.62;
+      var diag = (r >= 10 && r <= 22) && Math.abs(c - x) <= 1.7;
+      on.push(bar || diag);
+    }
+  }
+
+  var frag = document.createDocumentFragment();
+  for (var i = 0; i < N * N; i++) {
+    var el = document.createElement('i');
+    if (on[i]) {
+      el.className = 'on';
+      // 위에서 아래로 차례로 찍히는 효과
+      el.style.animationDelay = (Math.floor(i / N) * 22 + 120) + 'ms';
+    }
+    frag.appendChild(el);
+  }
+  g.appendChild(frag);
+})();
+</script>
+
+</body>
+</html>
