@@ -3,10 +3,10 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>실습자료실 — 인공지능 만들기 교과서</title>
-<meta name="description" content="『인공지능 만들기 교과서』 실습코드와 실습데이터, 정오표, 코드 갱신 안내를 제공합니다.">
+<title>실습자료실 — 손으로 배우는 인공지능</title>
+<meta name="description" content="『손으로 배우는 인공지능』 실습코드와 실습데이터, 정오표, 코드 갱신 안내를 제공합니다.">
 
-<meta property="og:title" content="실습자료실 — 인공지능 만들기 교과서">
+<meta property="og:title" content="실습자료실 — 손으로 배우는 인공지능">
 <meta property="og:description" content="실습코드와 실습데이터, 정오표, 코드 갱신 안내">
 <meta property="og:type" content="website">
 
@@ -82,19 +82,47 @@ a:focus-visible,button:focus-visible{
   max-width:var(--wrap);
   margin:0 auto;
 }
-.pixelgrid{
-  flex:0 0 auto;
+
+/* ---------- mark: 학습된 은닉층 필터 세 개 ---------- */
+.mark{flex:0 0 auto}
+.filters{
+  display:flex;
+  gap:10px;
+}
+.fmap{
   display:grid;
   grid-template-columns:repeat(28,1fr);
-  width:120px;
-  height:120px;
-  gap:1px;
-}
-.pixelgrid i{
+  width:72px;
+  height:72px;
   background:var(--grid);
-  border-radius:.5px;
+  border-radius:2px;
+  overflow:hidden;
 }
-.pixelgrid i.on{background:var(--ink)}
+.fmap i{position:relative;display:block}
+/* 가중치 부호에 따라 색이 갈립니다. 세기(--v)는 스크립트가 칸마다 넣어 줍니다. */
+.fmap i.pos::after,
+.fmap i.neg::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  opacity:0;
+  animation:weight .4s ease-out forwards;
+  animation-delay:var(--d,0ms);
+}
+.fmap i.pos::after{background:var(--teal)}
+.fmap i.neg::after{background:var(--amber)}
+@keyframes weight{
+  from{opacity:0}
+  to{opacity:var(--v,1)}
+}
+.markcap{
+  margin:.6rem 0 0;
+  font-family:var(--mono);
+  font-size:.66rem;
+  letter-spacing:.1em;
+  color:var(--ink-faint);
+  line-height:1.5;
+}
 
 .masthead h1{
   margin:0;
@@ -289,23 +317,18 @@ footer p{margin:.4rem 0}
     gap:1.5rem;
     padding:2.5rem 1.5rem 2rem;
   }
-  .pixelgrid{width:84px;height:84px}
+  .filters{gap:8px}
+  .fmap{width:54px;height:54px}
   .folders{grid-template-columns:1fr}
   .folder{padding:1.35rem 1.25rem}
   section{padding:2.75rem 0}
 }
 
 /* ---------- motion ---------- */
-.pixelgrid i.on{
-  animation:ink .5s ease-out backwards;
-}
-@keyframes ink{
-  from{background:var(--grid)}
-  to{background:var(--ink)}
-}
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{
     animation-duration:.001ms !important;
+    animation-delay:0s !important;
     animation-iteration-count:1 !important;
     transition-duration:.001ms !important;
   }
@@ -316,10 +339,13 @@ footer p{margin:.4rem 0}
 
 <header class="masthead">
   <div class="masthead-inner">
-    <div class="pixelgrid" id="grid" aria-hidden="true"></div>
+    <div class="mark">
+      <div class="filters" id="filters" aria-hidden="true"></div>
+      <p class="markcap">학습된 은닉층 필터</p>
+    </div>
     <div>
       <p class="eyebrow">실습자료실</p>
-      <h1>인공지능 만들기 교과서</h1>
+      <h1>손으로 배우는 인공지능</h1>
       <p class="book">실습코드 · 실습데이터 · 정오표 · 코드 갱신 안내</p>
     </div>
   </div>
@@ -474,41 +500,101 @@ footer p{margin:.4rem 0}
 <footer>
   <div class="wrap">
     <!--<p><strong>문의</strong> · 오류 제보나 실습 중 문제가 있으시면 <a href="mailto:MLFundamentals@gmail.com">MLFundamentals@gmail.com</a> 으로 알려 주세요.</p>-->
-    <p>『인공지능 만들기 교과서』 실습자료실 · 『인공지능 구조 원리 교과서』 실습편</p>
+    <p>『손으로 배우는 인공지능』 실습자료실 · 『인공지능 구조 원리 교과서』 실습편</p>
   </div>
 </footer>
 
 <script>
-// 머리말의 픽셀 격자: MNIST 손글씨 '7'
-// 책 IV-4에서 모델이 판독했던 그 숫자입니다.
+/* ------------------------------------------------------------------
+   머리말의 마크: 학습된 은닉층 필터 세 개
+
+   28×28 입력을 받는 은닉층 뉴런 하나는 784개의 가중치를 갖습니다.
+   그 가중치를 다시 28×28로 펼쳐 놓으면, 그 뉴런이 입력의 '어떤 무늬'에
+   반응하도록 학습되었는지가 눈에 보입니다.
+   학습을 마친 신경망에서는 방향이 서로 다른 획 검출기가 흔히 나타나는데,
+   여기서는 세로 · 사선 · 가로 세 방향을 놓았습니다.
+
+   청록 = 양수 가중치 (이 자리에 획이 있으면 반응이 커짐)
+   황갈 = 음수 가중치 (이 자리에 획이 있으면 반응이 줄어듦)
+   가장자리의 옅은 얼룩은 학습이 거의 일어나지 않아 남은 초깃값입니다.
+------------------------------------------------------------------- */
 (function () {
-  var g = document.getElementById('grid');
-  if (!g) return;
+  var host = document.getElementById('filters');
+  if (!host) return;
 
-  var N = 28, cells = [], on = [];
+  var N = 28;
 
-  for (var r = 0; r < N; r++) {
-    for (var c = 0; c < N; c++) {
-      // 가로획
-      var bar = (r >= 6 && r <= 9) && (c >= 7 && c <= 21);
-      // 세로에 가까운 사선
-      var x = 21 - (r - 9) * 0.62;
-      var diag = (r >= 10 && r <= 22) && Math.abs(c - x) <= 1.7;
-      on.push(bar || diag);
-    }
+  // 시드 고정 난수 — 새로고침해도 늘 같은 무늬가 나옵니다
+  var seed = 20240307;
+  function rnd() {
+    seed = (seed * 1664525 + 1013904223) % 4294967296;
+    return seed / 4294967296;
   }
 
-  var frag = document.createDocumentFragment();
-  for (var i = 0; i < N * N; i++) {
-    var el = document.createElement('i');
-    if (on[i]) {
-      el.className = 'on';
-      // 위에서 아래로 차례로 찍히는 효과
-      el.style.animationDelay = (Math.floor(i / N) * 22 + 120) + 'ms';
-    }
-    frag.appendChild(el);
+  // 방향 deg인 획 검출기 = 가운데 양(+) 띠 하나 + 양옆 음(−) 띠 둘
+  // 각 항목은 [중심x, 중심y, 폭, 길이, 방향, 가중치]
+  function detector(cx, cy, deg) {
+    var th = deg * Math.PI / 180,
+        ux = Math.cos(th), uy = Math.sin(th),   // 획과 직각인 방향
+        k  = 5.0;                               // 음의 띠까지의 거리
+    return [
+      [cx,          cy,          2.2, 6.4, deg,  1.00],
+      [cx - k * ux, cy - k * uy, 2.4, 5.4, deg, -0.70],
+      [cx + k * ux, cy + k * uy, 2.4, 5.4, deg, -0.64]
+    ];
   }
-  g.appendChild(frag);
+
+  var MAPS = [
+    detector(13.4, 13.2,   6),   // 세로에 가까운 획
+    detector(13.6, 13.4, -40),   // 사선
+    detector(13.5, 13.3,  96)    // 가로에 가까운 획
+  ];
+
+  MAPS.forEach(function (blobs, m) {
+    // 1) 가중치 값 계산
+    var v = new Array(N * N), peak = 0, i, r, c;
+    for (r = 0; r < N; r++) {
+      for (c = 0; c < N; c++) {
+        var s = 0;
+        for (var b = 0; b < blobs.length; b++) {
+          var bx  = blobs[b][0], by = blobs[b][1],
+              sx  = blobs[b][2], sy = blobs[b][3],
+              th  = blobs[b][4] * Math.PI / 180,
+              amp = blobs[b][5],
+              dx  = c - bx, dy = r - by,
+              a   =  dx * Math.cos(th) + dy * Math.sin(th),
+              e   = -dx * Math.sin(th) + dy * Math.cos(th);
+          s += amp * Math.exp(-(a * a / (2 * sx * sx) + e * e / (2 * sy * sy)));
+        }
+        v[r * N + c] = s;
+      }
+    }
+    // 학습되지 않은 자리에 남아 있는 초깃값 잡음
+    for (i = 0; i < N * N; i++) {
+      v[i] += (rnd() - 0.5) * 0.26;
+      if (Math.abs(v[i]) > peak) peak = Math.abs(v[i]);
+    }
+
+    // 2) 칸으로 그리기
+    var box = document.createElement('div');
+    box.className = 'fmap';
+    var frag = document.createDocumentFragment();
+    for (i = 0; i < N * N; i++) {
+      var w  = v[i] / peak,
+          op = Math.pow(Math.abs(w), 1.5) * 0.92,   // 약한 잡음일수록 더 옅게
+          el = document.createElement('i');
+      if (op > 0.02) {
+        el.className = w > 0 ? 'pos' : 'neg';
+        el.style.setProperty('--v', op.toFixed(3));
+        // 강하게 학습된 가중치부터 먼저 드러납니다
+        el.style.setProperty('--d',
+          Math.round(100 + m * 70 + (1 - Math.abs(w)) * 520) + 'ms');
+      }
+      frag.appendChild(el);
+    }
+    box.appendChild(frag);
+    host.appendChild(box);
+  });
 })();
 </script>
 
