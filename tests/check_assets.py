@@ -546,6 +546,35 @@ def write_json(results: list[Result], path: Path, elapsed: float) -> None:
     path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
 
 
+def append_history(results: list[Result], path: Path, elapsed: float) -> None:
+    """점검 이력을 한 줄씩 누적한다.
+
+    두 가지 역할을 한다.
+    ① 2~3년치 추이를 한 파일에서 훑어볼 수 있다.
+    ② 매 실행마다 파일이 반드시 변하므로 저장소에 커밋이 생긴다.
+       공개 저장소는 60일간 커밋이 없으면 예약 실행이 자동 정지되는데,
+       이 줄이 그 시계를 매주 초기화한다. 점검 장치가 소리 없이 멈추는 것을 막는 장치다.
+    """
+    state, _ = summarize(results)
+    now = datetime.now(KST)
+    counts = {k: sum(1 for r in results if r.status == k)
+              for k in ("OK", "WARN", "FAIL", "SKIP")}
+    problems = ";".join(
+        r.asset.id for r in results if r.status in ("FAIL", "WARN")
+    ) or "-"
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    is_new = not path.exists()
+    with path.open("a", encoding="utf-8") as f:
+        if is_new:
+            f.write("점검시각\t상태\t정상\t주의\t실패\t수동\t소요초\t문제항목\n")
+        f.write(
+            f"{now.strftime('%Y-%m-%d %H:%M')}\t{state}\t"
+            f"{counts['OK']}\t{counts['WARN']}\t{counts['FAIL']}\t{counts['SKIP']}\t"
+            f"{elapsed:.1f}\t{problems}\n"
+        )
+
+
 def write_markdown(results: list[Result], path: Path) -> None:
     """GitHub Actions 요약(job summary)용."""
     _, message = summarize(results)
@@ -590,6 +619,8 @@ def main() -> int:
     p.add_argument("--workers", type=int, default=8, help="동시 요청 수")
     p.add_argument("--json", type=Path, default=SCRIPT_DIR / "report.json", help="JSON 보고서 경로")
     p.add_argument("--markdown", type=Path, default=None, help="마크다운 요약 경로")
+    p.add_argument("--history", type=Path, default=None,
+                   help="점검 이력을 누적할 TSV 경로 (지정하면 한 줄 덧붙임)")
     p.add_argument("--strict", action="store_true", help="WARN과 medium 실패도 종료코드 1")
     p.add_argument("--list", action="store_true", help="점검 없이 목록만 출력")
     args = p.parse_args()
@@ -630,6 +661,8 @@ def main() -> int:
         write_json(results, args.json, elapsed)
     if args.markdown:
         write_markdown(results, args.markdown)
+    if args.history:
+        append_history(results, args.history, elapsed)
 
     print_report(results, args.include_manual, elapsed)
 
@@ -637,6 +670,8 @@ def main() -> int:
         print(f"\nJSON 보고서: {args.json}")
     if args.markdown:
         print(f"마크다운 요약: {args.markdown}")
+    if args.history:
+        print(f"이력 기록: {args.history}")
 
     if args.strict:
         bad = any(r.status in ("FAIL", "WARN") for r in results)
