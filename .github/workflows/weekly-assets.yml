@@ -30,10 +30,10 @@ jobs:
 
     steps:
       - name: 저장소 내려받기
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: 파이썬 준비
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v7
         with:
           python-version: "3.12"
 
@@ -55,11 +55,12 @@ jobs:
 
       - name: 보고서 보관
         if: always()
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
         with:
           name: asset-report
           path: tests/report.json
           retention-days: 90
+          if-no-files-found: warn
 
       - name: 실패 시 안내
         if: failure()
