@@ -53,6 +53,28 @@ NOTEBOOK_INPUTS: dict[str, list[str]] = {
         ["5.7", "2.8", "4.9", "1.7"],
     # III-3 은 input() 없음 (78행에 테스트값이 하드코딩되어 있다)
     "Multiple Linear Regression_Hypertension_3paras.ipynb": [],
+
+    # IV-1 · while True 반복. 마지막은 반드시 종료어('q')여야 한다.
+    "Perceptron_AND.ipynb": ["1 0", "q"],
+    # IV-6 · while True 반복. 마지막은 반드시 종료어('exit')여야 한다.
+    "RNN_hello world.ipynb": ["hello wo", "exit"],
+}
+
+# ---------------------------------------------------------------------------
+# 학습 시간 상한 (에포크 수)
+#
+# 노트북에 하드코딩된 epochs를 실행 시점에만 낮춘다. 파일은 바뀌지 않는다.
+# 값이 없으면 노트북에 적힌 그대로 돈다.
+#
+# ⚠ 에포크를 줄이면 정확도가 떨어진다. 반드시 임계값과 짝지어 정할 것.
+#    (지침서 6-4의 Evaluation Metrics 사례: 1에포크로 줄이면 0.9147까지 내려가
+#     하한 0.90과의 여유가 1.5%p밖에 남지 않는다)
+# ---------------------------------------------------------------------------
+MAX_EPOCHS: dict[str, int] = {
+    "MNIST_DNN.ipynb": 3,      # 원본 10 · Actions 2코어에서 10에포크는 과하다
+    "MNIST_CNN.ipynb": 2,      # 원본 10 · Colab CPU 기준 7~8분, 러너에서는 3~5배
+    "Evaluation Metrics.ipynb": 3,   # 준비 셀. 6-4에서 1이 아니라 3을 권한 이유 참조
+    # Perceptron_AND(200) · XOR(300) · RNN(100)은 몇 초면 끝나므로 손대지 않는다
 }
 
 
@@ -103,14 +125,21 @@ class _FakeCredentials:
 
 
 def _install_google_auth() -> None:
-    # google 네임스페이스 패키지를 손상시키지 않도록, 이미 있으면 속성만 바꾼다.
-    google = sys.modules.get("google")
-    if google is None:
+    # ⚠ 여기가 함정이다.
+    # 'google'은 여러 패키지가 나눠 쓰는 네임스페이스다. google.protobuf(TensorFlow가
+    # 쓴다), google.auth, google.colab이 모두 이 이름 아래 들어온다.
+    # 가짜 google 모듈을 만들어 덮어쓰면 __path__가 비어버려서, 그 뒤의
+    # `import google.protobuf`가 "모듈 없음"으로 실패한다 → TensorFlow 전체가 죽는다.
+    # 그래서 진짜 google을 먼저 불러오고, 없을 때만 새로 만든다.
+    try:
+        import google                            # 진짜 네임스페이스를 그대로 쓴다
+    except ImportError:
         google = types.ModuleType("google")
-        google.__path__ = []                     # 패키지로 인식시킨다
+        google.__path__ = []                     # 아무것도 없을 때만 빈 껍데기
         sys.modules["google"] = google
 
     # --- google.colab.auth ---------------------------------------------------
+    # google.colab은 Colab 밖에 존재하지 않으므로 항상 가짜를 넣는다.
     colab = types.ModuleType("google.colab")
     colab.__path__ = []
     auth = types.ModuleType("google.colab.auth")
@@ -260,6 +289,74 @@ def _install_gspread() -> None:
 
 
 # ---------------------------------------------------------------------------
+# 4. 학습 시간 상한 — model.fit()의 epochs를 실행 시점에만 낮춘다
+# ---------------------------------------------------------------------------
+_epoch_cap_log: list[tuple[int, int]] = []
+_epoch_limit: list[int | None] = [None]        # 현재 걸린 상한. None이면 상한 없음
+
+
+def _install_epoch_cap(limit: int | None) -> None:
+    """Keras의 Model.fit을 감싸 epochs 상한을 씌운다.
+
+    노트북 코드는 그대로 epochs=10을 넘기고, 중간에서 우리가 낮춰 받는다.
+    한 프로세스에서 노트북을 여러 개 돌리므로, 상한 값은 매번 갈아끼운다.
+    (DNN 3 → CNN 2처럼 노트북마다 다르기 때문이다)
+    """
+    _epoch_limit[0] = limit
+    if limit is None:
+        return
+
+    try:
+        import keras
+    except ImportError:
+        raise PreludeError(
+            "에포크 상한을 걸려 했으나 keras를 불러올 수 없다. "
+            "tensorflow(또는 tensorflow-cpu)가 설치되어 있는지 확인할 것."
+        )
+
+    if getattr(keras.Model.fit, "_is_prelude_capped", False):
+        return                                   # 감싸기는 한 번이면 된다
+
+    original = keras.Model.fit
+
+    def capped_fit(self, *args, **kwargs):
+        cap = _epoch_limit[0]
+        if cap is None:
+            return original(self, *args, **kwargs)
+        asked = kwargs.get("epochs")
+        if asked is None and len(args) >= 4:
+            # epochs가 위치 인자로 넘어온 경우. 이 책의 노트북에는 없지만,
+            # 조용히 통과시키면 상한이 걸리지 않은 채 오래 돌게 된다.
+            raise PreludeError(
+                "epochs가 위치 인자로 전달되어 상한을 걸 수 없다. "
+                "prelude.py의 capped_fit을 손볼 것."
+            )
+        if asked is not None and asked > cap:
+            _epoch_cap_log.append((asked, cap))
+            kwargs["epochs"] = cap
+        return original(self, *args, **kwargs)
+
+    capped_fit._is_prelude_capped = True
+    keras.Model.fit = capped_fit
+
+
+def epoch_cap_applied() -> list[tuple[int, int]]:
+    """(원래 에포크, 낮춘 에포크) 목록. 비어 있으면 상한이 걸리지 않은 것이다."""
+    return list(_epoch_cap_log)
+
+
+# ---------------------------------------------------------------------------
+# 5. 그림 그리기 — 화면 없는 서버에서 창을 띄우려다 멈추는 것을 막는다
+# ---------------------------------------------------------------------------
+def _install_headless_matplotlib() -> None:
+    try:
+        import matplotlib
+        matplotlib.use("Agg", force=True)         # 파일로만 그린다. 창을 열지 않는다
+    except ImportError:
+        pass
+
+
+# ---------------------------------------------------------------------------
 # 진입점
 # ---------------------------------------------------------------------------
 def install(notebook: str, inputs: list[str] | None = None, verbose: bool = True) -> None:
@@ -271,9 +368,17 @@ def install(notebook: str, inputs: list[str] | None = None, verbose: bool = True
     name = os.path.basename(notebook)
     answers = inputs if inputs is not None else NOTEBOOK_INPUTS.get(name, [])
 
+    _epoch_cap_log.clear()
     _install_input(answers)
     _install_google_auth()
     _install_gspread()
+    _install_headless_matplotlib()
+
+    limit = MAX_EPOCHS.get(name)
+    if limit is not None or _epoch_limit[0] is not None:
+        # 상한이 있으면 걸고, 앞 노트북에 걸려 있던 상한은 여기서 푼다
+        _install_epoch_cap(limit)
 
     if verbose:
-        print(f"[prelude] {name} · 대역 설치 완료 (input {len(answers)}개 준비)")
+        note = f" · 에포크 상한 {limit}" if limit else ""
+        print(f"[prelude] {name} · 대역 설치 완료 (input {len(answers)}개 준비){note}")
