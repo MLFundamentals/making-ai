@@ -57,10 +57,13 @@ jobs:
             --include-manual \
             --json tests/report.json \
             --markdown "$GITHUB_STEP_SUMMARY" \
+            --history tests/history.tsv \
             ${{ github.event.inputs.only && format('--only {0}', github.event.inputs.only) || '' }} \
             ${{ github.event.inputs.strict == 'true' && '--strict' || '' }}
 
       # 점검이 실패해도 페이지에는 '확인 중'으로 반영해야 하므로 always().
+      # history.tsv가 매 실행마다 늘어나므로 커밋은 항상 발생한다.
+      # 이 주간 커밋이 '60일 무활동 시 예약 실행 자동 정지'를 막아 준다.
       - name: 페이지 상태 갱신
         if: always() && github.event.inputs.skip_commit != 'true'
         run: python tests/update_site.py
@@ -70,7 +73,7 @@ jobs:
         run: |
           git config user.name  "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add index.html tests/report.json
+          git add index.html tests/report.json tests/history.tsv
           if git diff --staged --quiet; then
             echo "바뀐 내용이 없어 커밋하지 않는다."
           else
