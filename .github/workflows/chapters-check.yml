@@ -1,0 +1,99 @@
+name: 노트북 수동 점검
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 수동 실행 전용. 예약 실행이 없고, Actions 탭에서 버튼을 눌러야만 돈다.
+# chapter3-check.yml 을 III·IV·V장까지 넓힌 것이다. (옛 파일은 지워도 된다)
+#
+# 쓰임새는 둘이다.
+#   1) 새 장을 점검 체계에 넣기 전에 한 번 돌려 보기
+#   2) 나중에 "코드가 안 돌아간다"는 제보를 받았을 때 눌러 보는 확인 버튼
+#
+# 저장소에는 아무것도 쓰지 않는다. 노트북 파일도 읽기만 한다.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      chapters:
+        description: "점검할 장 (공백으로 구분). 예: 3 4 5 / 4 5 / 4"
+        required: false
+        default: "3 4 5"
+      run_probe:
+        description: "구글시트 형식 확인을 함께 실행 (III장을 볼 때만 의미 있다)"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: III·IV·V장 노트북
+    runs-on: ubuntu-latest
+    # MNIST CNN이 러너(2코어)에서 오래 걸린다. 넉넉히 잡아 둔다.
+    timeout-minutes: 60
+
+    steps:
+      - name: 저장소 내려받기
+        uses: actions/checkout@v7
+
+      - name: 파이썬 준비
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # 선택 단계. 시트 형식은 이미 한 번 통과했으므로 기본값은 끔.
+      - name: 구글시트 형식 확인
+        if: ${{ github.event.inputs.run_probe == 'true' }}
+        run: python tests/probe_gviz.py
+
+      # 버전을 고정하지 않는다. 최신 라이브러리에서 깨지는지 보는 것이
+      # 이 점검의 목적이기 때문이다.
+      #
+      # tensorflow 대신 tensorflow-cpu 를 쓴다. 러너에는 GPU가 없고,
+      # 내려받는 용량이 절반 이하라 설치가 훨씬 빠르다. 코드에서 보이는 모습은 같다.
+      # ipython 은 강화학습 노트북의 from IPython.display import HTML 때문에 필요하다.
+      - name: 실습용 라이브러리 설치
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas scikit-learn seaborn \
+                      tensorflow-cpu gymnasium ipython
+
+      - name: 설치된 버전 기록
+        run: |
+          {
+            echo "## 실행 환경"
+            echo ""
+            echo '```'
+            python - <<'PY'
+          import sys
+          print("python", sys.version.split()[0])
+          for m in ["numpy", "pandas", "sklearn", "tensorflow", "keras", "gymnasium", "seaborn"]:
+              try:
+                  mod = __import__(m)
+                  print(m, getattr(mod, "__version__", "?"))
+              except Exception as e:
+                  print(m, "불러오기 실패:", type(e).__name__)
+          PY
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: 노트북 실행
+        run: python tests/run_chapters.py --chapters ${{ github.event.inputs.chapters || '3 4 5' }}
+
+      - name: 실패 시 읽을 것
+        if: failure()
+        run: |
+          echo "::warning::점검이 실패했다. 아래 순서로 볼 것."
+          echo "1. Summary 탭의 표에서 어느 절이 ❌ 인지 먼저 확인한다."
+          echo "2. '대역 오류'로 시작하면 prelude.py 문제다 (노트북 코드는 멀쩡하다)."
+          echo "3. 역추적(Traceback)이 찍혀 있으면 노트북 코드 또는 라이브러리 변경 문제다."
+          echo "   맨 아랫줄의 오류 이름과 파일 이름을 보면 어느 라이브러리인지 드러난다."
+          echo "4. 📏(측정)은 실패가 아니다. 값만 재서 보고한 것이다."
+          echo "5. 네트워크 일시 장애일 수 있으므로, 재실행 후에도 같은 항목이 실패하는지 먼저 볼 것."
+
+      - name: 성공 시 안내
+        if: success()
+        run: |
+          echo "::notice::점검을 마쳤다. Summary 탭에서 📏(측정) 값을 확인하고 임계값을 정할 것."
