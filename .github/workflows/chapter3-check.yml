@@ -1,0 +1,89 @@
+name: III장 1회 점검
+
+# ─────────────────────────────────────────────────────────────────────────────
+# 1회용 워크플로. 예약 실행이 없고, Actions 탭에서 버튼을 눌러야만 돈다.
+#
+# 확인하려는 것은 두 가지다.
+#   1) 구글시트를 공개 주소(gviz)로 읽었을 때, 값이 노트북이 기대하는 모양인가
+#      → 백분율·통화 서식이 걸려 있으면 astype(float)에서 깨진다
+#   2) 그 값으로 III장 노트북 4개가 끝까지 도는가, 정확도가 책과 맞는가
+#
+# 저장소에는 아무것도 쓰지 않는다. 노트북 파일도 읽기만 한다.
+# 통과하면 이 파일은 지워도 되고, 레인 B 월간 워크플로의 뼈대로 써도 된다.
+# ─────────────────────────────────────────────────────────────────────────────
+
+on:
+  workflow_dispatch:
+    inputs:
+      probe_only:
+        description: "시트 형식만 확인하고 노트북 실행은 건너뛴다"
+        type: boolean
+        required: false
+        default: false
+
+# 커밋하지 않으므로 읽기 권한이면 충분하다.
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: 시트 형식 + III장 노트북 4개
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: 저장소 내려받기
+        uses: actions/checkout@v7
+
+      - name: 파이썬 준비
+        uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+
+      # ── 1단계 ──────────────────────────────────────────────────────────────
+      # probe_gviz.py는 표준 라이브러리만 쓴다. 설치할 것이 없다.
+      # 여기서 실패하면 아래 단계는 자동으로 건너뛴다 (원인이 분명해진다).
+      - name: 구글시트 형식 확인
+        run: python tests/probe_gviz.py
+
+      # ── 2단계 ──────────────────────────────────────────────────────────────
+      # 버전을 고정하지 않는다. 최신 라이브러리에서 깨지는지 보는 것이
+      # 이 점검의 목적이기 때문이다.
+      - name: 실습용 라이브러리 설치
+        if: ${{ github.event.inputs.probe_only != 'true' }}
+        run: |
+          python -m pip install --upgrade pip
+          pip install numpy pandas scikit-learn
+
+      - name: 설치된 버전 기록
+        if: ${{ github.event.inputs.probe_only != 'true' }}
+        run: |
+          {
+            echo "## 실행 환경"
+            echo ""
+            echo '```'
+            python -c "import sys; print('python', sys.version.split()[0])"
+            python -c "import numpy, pandas, sklearn; print('numpy', numpy.__version__); print('pandas', pandas.__version__); print('scikit-learn', sklearn.__version__)"
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: III장 노트북 실행
+        if: ${{ github.event.inputs.probe_only != 'true' }}
+        run: python tests/run_chapter3.py
+
+      # ── 안내 ───────────────────────────────────────────────────────────────
+      - name: 실패 시 읽을 것
+        if: failure()
+        run: |
+          echo "::warning::점검이 실패했다. 아래 순서로 볼 것."
+          echo "1. '구글시트 형식 확인'에서 멈췄다면 → 시트 값의 표기 형식 문제다."
+          echo "   출력에 찍힌 샘플 행을 보면 무엇이 숫자가 아닌지 바로 보인다."
+          echo "   백분율 서식이면 시트 서식을 '일반'으로 바꾸거나 prelude.py에서 벗겨내면 된다."
+          echo "2. 'III장 노트북 실행'에서 멈췄다면 → Summary 탭의 표에서 어느 절인지 확인할 것."
+          echo "   '대역 오류'로 시작하면 prelude.py 문제이고, 역추적이 찍혀 있으면 노트북 코드 문제다."
+          echo "3. 네트워크 일시 장애일 수 있으므로, 재실행 후에도 같은 항목이 실패하는지 먼저 볼 것."
+
+      - name: 성공 시 안내
+        if: success()
+        run: |
+          echo "::notice::III장 4개가 진짜 시트로 끝까지 돌았다. IV장 이후로 넘어가도 좋다."
