@@ -1,0 +1,69 @@
+name: 주간 자산 점검
+
+# 레인 A — 외부 자산 링크 체커
+# 첫 실행은 Actions 탭에서 'Run workflow'로 수동 실행할 것.
+# 정기 실행은 매주 월요일 09:00 KST.
+
+on:
+  schedule:
+    - cron: "0 0 * * 1"      # UTC 월요일 00:00 = KST 월요일 09:00
+  workflow_dispatch:
+    inputs:
+      only:
+        description: "분류 필터 (예: entry,gsheet,hf_model). 비우면 전체"
+        required: false
+        default: ""
+      strict:
+        description: "주의(WARN)도 실패로 처리"
+        type: boolean
+        required: false
+        default: false
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    name: 외부 자산 35건 점검
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: 저장소 내려받기
+        uses: actions/checkout@v4
+
+      - name: 파이썬 준비
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      # check_assets.py는 표준 라이브러리만 사용하므로 pip install 단계가 없다.
+
+      - name: 자산 점검 실행
+        env:
+          # 등록하지 않아도 동작한다. 없으면 드라이브는 HTML 추정으로,
+          # HuggingFace는 비인증으로 확인한다.
+          GDRIVE_API_KEY: ${{ secrets.GDRIVE_API_KEY }}
+          HF_TOKEN: ${{ secrets.HF_TOKEN }}
+        run: |
+          python tests/check_assets.py \
+            --include-manual \
+            --json tests/report.json \
+            --markdown "$GITHUB_STEP_SUMMARY" \
+            ${{ github.event.inputs.only && format('--only {0}', github.event.inputs.only) || '' }} \
+            ${{ github.event.inputs.strict == 'true' && '--strict' || '' }}
+
+      - name: 보고서 보관
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: asset-report
+          path: tests/report.json
+          retention-days: 90
+
+      - name: 실패 시 안내
+        if: failure()
+        run: |
+          echo "::warning::critical/high 등급 자산에 문제가 있다."
+          echo "Summary 탭의 표와 asset-report 아티팩트의 report.json을 확인할 것."
+          echo "네트워크 일시 장애일 수 있으므로, 재실행 후에도 같은 항목이 실패하는지 먼저 볼 것."
