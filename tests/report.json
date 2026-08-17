@@ -1,0 +1,613 @@
+{
+  "checked_at": "2026-08-17",
+  "checked_at_iso": "2026-08-17T14:22:47+09:00",
+  "state": "ok",
+  "check_result": "전체 정상",
+  "elapsed_sec": 1.0,
+  "counts": {
+    "OK": 24,
+    "WARN": 0,
+    "FAIL": 0,
+    "SKIP": 11
+  },
+  "results": [
+    {
+      "id": "page-making-ai",
+      "category": "entry",
+      "name": "실습자료실 페이지 (책 인쇄 주소)",
+      "section": "I-3",
+      "severity": "critical",
+      "check": "http",
+      "url": "https://mlfundamentals.github.io/making-ai/",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 17,934 bytes",
+      "elapsed_ms": 174,
+      "extra": {
+        "final_url": "https://mlfundamentals.github.io/making-ai/",
+        "content_length": "17934"
+      }
+    },
+    {
+      "id": "page-series-root",
+      "category": "entry",
+      "name": "시리즈 루트 페이지",
+      "section": "-",
+      "severity": "high",
+      "check": "http",
+      "url": "https://mlfundamentals.github.io/",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 1,922 bytes",
+      "elapsed_ms": 181,
+      "extra": {
+        "final_url": "https://mlfundamentals.github.io/",
+        "content_length": "1922"
+      }
+    },
+    {
+      "id": "drive-folder-code",
+      "category": "drive",
+      "name": "실습코드 폴더",
+      "section": "I-3",
+      "severity": "critical",
+      "check": "drive",
+      "url": "https://drive.google.com/drive/folders/1kImMkEVKgCcu7n7dU8-guOGb7MkqWREb",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
+      "elapsed_ms": 483,
+      "extra": {
+        "mode": "html"
+      }
+    },
+    {
+      "id": "drive-folder-data",
+      "category": "drive",
+      "name": "실습데이터 폴더",
+      "section": "I-3",
+      "severity": "critical",
+      "check": "drive",
+      "url": "https://drive.google.com/drive/folders/1ybMKV8sAiXjQA8hbHaFp-qF7Rg5vlpV4",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
+      "elapsed_ms": 459,
+      "extra": {
+        "mode": "html"
+      }
+    },
+    {
+      "id": "drive-folder-root",
+      "category": "drive",
+      "name": "상위 폴더",
+      "section": "I-3",
+      "severity": "high",
+      "check": "drive",
+      "url": "https://drive.google.com/drive/folders/1dXEvlmi16QCpLlKDdsKSlX5uVrRyvy9j",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
+      "elapsed_ms": 457,
+      "extra": {
+        "mode": "html"
+      }
+    },
+    {
+      "id": "sheet-hypertension-8paras",
+      "category": "gsheet",
+      "name": "고혈압 8파라미터 (III-4 사용)",
+      "section": "III-4",
+      "severity": "critical",
+      "check": "gsheet",
+      "url": "https://docs.google.com/spreadsheets/d/1eC4YnMRr5a6v2EmxcZBUb-mGv6k8Qz-8UcNTSoeM2qU/gviz/tq?tqx=out:csv",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "100행 × 9열 · 헤더: Age, Gender, BMI",
+      "elapsed_ms": 789,
+      "extra": {
+        "columns": 9,
+        "data_rows": 100,
+        "header": [
+          "Age",
+          "Gender",
+          "BMI",
+          "Diet",
+          "Exercise_per_week",
+          "Alcohol_intake",
+          "Smoking",
+          "Family_history",
+          "Hypertension_risk"
+        ]
+      }
+    },
+    {
+      "id": "sheet-hypertension-3paras",
+      "category": "gsheet",
+      "name": "고혈압 3파라미터 (III-3 사용)",
+      "section": "III-3",
+      "severity": "critical",
+      "check": "gsheet",
+      "url": "https://docs.google.com/spreadsheets/d/12RmvY2KI-6UcMEHXX4E65R_oso4965jNpgAbKeIgI9c/gviz/tq?tqx=out:csv",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "10행 × 4열 · 헤더: BMI, Exercise_per_week, Diet",
+      "elapsed_ms": 597,
+      "extra": {
+        "columns": 4,
+        "data_rows": 10,
+        "header": [
+          "BMI",
+          "Exercise_per_week",
+          "Diet",
+          "Hypertension_risk"
+        ]
+      }
+    },
+    {
+      "id": "sheet-shopping",
+      "category": "gsheet",
+      "name": "Shopping Behavior Dataset",
+      "section": "III-5",
+      "severity": "critical",
+      "check": "gsheet",
+      "url": "https://docs.google.com/spreadsheets/d/1MI-HWfwR5-Dp-A8dJ4DfOVGGau-9QdysfvsQHvZ5VY0/gviz/tq?tqx=out:csv",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "2,000행 × 7열 · 헤더: Age, Gender, Pages_Viewed",
+      "elapsed_ms": 689,
+      "extra": {
+        "columns": 7,
+        "data_rows": 2000,
+        "header": [
+          "Age",
+          "Gender",
+          "Pages_Viewed",
+          "Time_Spent",
+          "Previous_Purchases",
+          "Ad_Clicked",
+          "Purchase"
+        ]
+      }
+    },
+    {
+      "id": "sheet-matches-record",
+      "category": "gsheet",
+      "name": "Matches_Record",
+      "section": "IX-3",
+      "severity": "high",
+      "check": "gsheet",
+      "url": "https://docs.google.com/spreadsheets/d/1SyBg64IX_uX290hsIwGH3zZwe_Aeb1SBLx146zSGIro/gviz/tq?tqx=out:csv",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "1,200행 × 26열 · 헤더: match_id, fit_b, fit_r",
+      "elapsed_ms": 409,
+      "extra": {
+        "columns": 26,
+        "data_rows": 1200,
+        "header": [
+          "match_id",
+          "fit_b",
+          "fit_r",
+          "winner",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ]
+      }
+    },
+    {
+      "id": "data-nsmc-train",
+      "category": "dataset",
+      "name": "NSMC 학습 데이터",
+      "section": "VI-2",
+      "severity": "high",
+      "check": "http",
+      "url": "https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 14,628,807 bytes",
+      "elapsed_ms": 72,
+      "extra": {
+        "final_url": "https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt",
+        "content_length": "14628807"
+      }
+    },
+    {
+      "id": "data-nsmc-test",
+      "category": "dataset",
+      "name": "NSMC 평가 데이터",
+      "section": "VI-2",
+      "severity": "high",
+      "check": "http",
+      "url": "https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 4,893,335 bytes",
+      "elapsed_ms": 64,
+      "extra": {
+        "final_url": "https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt",
+        "content_length": "4893335"
+      }
+    },
+    {
+      "id": "data-glove-6b",
+      "category": "dataset",
+      "name": "GloVe 6B 임베딩",
+      "section": "VI-3",
+      "severity": "high",
+      "check": "http",
+      "url": "http://nlp.stanford.edu/data/glove.6B.zip",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 862,182,613 bytes · 리다이렉트 → https://downloads.cs.stanford.edu/nlp/data/glove.6B.zip",
+      "elapsed_ms": 672,
+      "extra": {
+        "final_url": "https://downloads.cs.stanford.edu/nlp/data/glove.6B.zip",
+        "content_length": "862182613"
+      }
+    },
+    {
+      "id": "data-tfds-cats-vs-dogs",
+      "category": "dataset",
+      "name": "TFDS cats_vs_dogs",
+      "section": "VI-4",
+      "severity": "medium",
+      "check": "http",
+      "url": "https://www.tensorflow.org/datasets/catalog/cats_vs_dogs",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 305,262 bytes",
+      "elapsed_ms": 349,
+      "extra": {
+        "final_url": "https://www.tensorflow.org/datasets/catalog/cats_vs_dogs",
+        "content_length": "305262"
+      }
+    },
+    {
+      "id": "data-tfds-imdb-reviews",
+      "category": "dataset",
+      "name": "TFDS imdb_reviews",
+      "section": "VI-5",
+      "severity": "medium",
+      "check": "http",
+      "url": "https://www.tensorflow.org/datasets/catalog/imdb_reviews",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 302,396 bytes",
+      "elapsed_ms": 554,
+      "extra": {
+        "final_url": "https://www.tensorflow.org/datasets/catalog/imdb_reviews",
+        "content_length": "302396"
+      }
+    },
+    {
+      "id": "hf-xlm-roberta-squad2",
+      "category": "hf_model",
+      "name": "다국어 QA",
+      "section": "VI-9",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/deepset/xlm-roberta-base-squad2",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2024-09-26",
+      "elapsed_ms": 57,
+      "extra": {
+        "model_id": "deepset/xlm-roberta-base-squad2",
+        "downloads": 82104,
+        "last_modified": "2024-09-26T09:33:03.000Z"
+      }
+    },
+    {
+      "id": "hf-kobart-summarization",
+      "category": "hf_model",
+      "name": "한국어 요약",
+      "section": "VI-9",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/digit82/kobart-summarization",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2022-03-01",
+      "elapsed_ms": 47,
+      "extra": {
+        "model_id": "digit82/kobart-summarization",
+        "downloads": 7119,
+        "last_modified": "2022-03-01T13:48:13.000Z"
+      }
+    },
+    {
+      "id": "hf-nllb-600m",
+      "category": "hf_model",
+      "name": "다국어 번역",
+      "section": "VI-9",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/facebook/nllb-200-distilled-600M",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2024-02-14",
+      "elapsed_ms": 49,
+      "extra": {
+        "model_id": "facebook/nllb-200-distilled-600M",
+        "downloads": 1273418,
+        "last_modified": "2024-02-14T17:18:36.000Z"
+      }
+    },
+    {
+      "id": "hf-mbart-large-50",
+      "category": "hf_model",
+      "name": "한-영 번역",
+      "section": "VI-9",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/facebook/mbart-large-50-many-to-many-mmt",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2023-09-28",
+      "elapsed_ms": 48,
+      "extra": {
+        "model_id": "facebook/mbart-large-50-many-to-many-mmt",
+        "downloads": 51094,
+        "last_modified": "2023-09-28T16:42:59.000Z"
+      }
+    },
+    {
+      "id": "hf-klue-bert-base",
+      "category": "hf_model",
+      "name": "한국어 BERT",
+      "section": "VI-10;VI-11",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/klue/bert-base",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2023-06-12",
+      "elapsed_ms": 44,
+      "extra": {
+        "model_id": "klue/bert-base",
+        "downloads": 41844,
+        "last_modified": "2023-06-12T12:30:04.000Z"
+      }
+    },
+    {
+      "id": "hf-kogpt2-base-v2",
+      "category": "hf_model",
+      "name": "한국어 GPT",
+      "section": "VI-11;VII-1",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/skt/kogpt2-base-v2",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2021-09-23",
+      "elapsed_ms": 48,
+      "extra": {
+        "model_id": "skt/kogpt2-base-v2",
+        "downloads": 8734,
+        "last_modified": "2021-09-23T16:29:28.000Z"
+      }
+    },
+    {
+      "id": "hf-blip-captioning",
+      "category": "hf_model",
+      "name": "이미지 캡셔닝",
+      "section": "VIII-2",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/Salesforce/blip-image-captioning-base",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2025-02-03",
+      "elapsed_ms": 45,
+      "extra": {
+        "model_id": "Salesforce/blip-image-captioning-base",
+        "downloads": 2164492,
+        "last_modified": "2025-02-03T06:45:16.000Z"
+      }
+    },
+    {
+      "id": "hf-whisper-small",
+      "category": "hf_model",
+      "name": "음성인식",
+      "section": "VIII-3",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/openai/whisper-small",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2024-02-29",
+      "elapsed_ms": 47,
+      "extra": {
+        "model_id": "openai/whisper-small",
+        "downloads": 2601990,
+        "last_modified": "2024-02-29T10:57:38.000Z"
+      }
+    },
+    {
+      "id": "hf-sd-turbo",
+      "category": "hf_model",
+      "name": "이미지 생성",
+      "section": "VII-2",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/stabilityai/sd-turbo",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2024-07-10",
+      "elapsed_ms": 47,
+      "extra": {
+        "model_id": "stabilityai/sd-turbo",
+        "downloads": 573003,
+        "last_modified": "2024-07-10T11:38:51.000Z"
+      }
+    },
+    {
+      "id": "hf-musicgen-small",
+      "category": "hf_model",
+      "name": "음악 생성",
+      "section": "VII-3",
+      "severity": "high",
+      "check": "hf",
+      "url": "https://huggingface.co/api/models/facebook/musicgen-small",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "공개 · 최종수정 2023-11-17",
+      "elapsed_ms": 47,
+      "extra": {
+        "model_id": "facebook/musicgen-small",
+        "downloads": 376912,
+        "last_modified": "2023-11-17T13:56:10.000Z"
+      }
+    },
+    {
+      "id": "file-patient-registration",
+      "category": "drive_file",
+      "name": "Patient Registration Data",
+      "section": "II-2-3",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/Patient Registration Data",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-patient-clinical",
+      "category": "drive_file",
+      "name": "Patient Clinical Data",
+      "section": "II-2-3",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/Patient Clinical Data",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-patient-monitoring",
+      "category": "drive_file",
+      "name": "Patient Health Monitoring Data",
+      "section": "II-2-3",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/Patient Health Monitoring Data",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-patient-registration-proc",
+      "category": "drive_file",
+      "name": "Patient Registration Data_Processed",
+      "section": "II-2-4",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/Patient Registration Data_Processed",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-patient-monitoring-proc",
+      "category": "drive_file",
+      "name": "Patient Health Monitoring Data_Processed",
+      "section": "II-2-4",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/Patient Health Monitoring Data_Processed",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-population-status",
+      "category": "drive_file",
+      "name": "Data_Population Status_Kor_20251227",
+      "section": "II-1",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/Data_Population Status_Kor_20251227",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-video-teded",
+      "category": "drive_file",
+      "name": "[TED-Ed] Sample Video_30s.mp4",
+      "section": "VIII-3",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/[TED-Ed] Sample Video_30s.mp4",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-video-cosmoswag",
+      "category": "drive_file",
+      "name": "[cosmoswag_kr] Sample Video_30s.mp4",
+      "section": "VIII-3",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/[cosmoswag_kr] Sample Video_30s.mp4",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-video-sora-woman",
+      "category": "drive_file",
+      "name": "[Sora] smiling woman.mp4",
+      "section": "VIII-2",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/[Sora] smiling woman.mp4",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-image-dalle-giftbox",
+      "category": "drive_file",
+      "name": "[DALL·E] gift box.png",
+      "section": "VIII-2",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/[DALL·E] gift box.png",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    },
+    {
+      "id": "file-audio-crowd-cheers",
+      "category": "drive_file",
+      "name": "[Pixabay] crowd-cheers.mp3",
+      "section": "VIII-2",
+      "severity": "medium",
+      "check": "manual",
+      "url": "실습데이터/[Pixabay] crowd-cheers.mp3",
+      "status": "SKIP",
+      "http_status": null,
+      "detail": "수동 확인 대상 — 드라이브 폴더 목록 대조(레인 C)로만 확인",
+      "elapsed_ms": 0
+    }
+  ]
+}
