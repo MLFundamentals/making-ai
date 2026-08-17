@@ -76,10 +76,10 @@ CASES = [
          note="씨앗이 3개 다 걸려 있어 완전히 결정적"),
     dict(chapter=4, section="IV-4", file="MNIST_DNN.ipynb",
          marker="모델 정확도", mode="floor", metric=ACC_PERCENT, floor=0.95, printed=0.9747,
-         note="6에포크로 상한. 3에포크 실측 0.9644 → 상향 후 0.97 안팎 예상"),
+         note="상한 없음(10에포크). 6에포크 실측 0.9665 → 책 값 0.9747 부근 예상"),
     dict(chapter=4, section="IV-5", file="MNIST_CNN.ipynb",
-         marker="모델 정확도", mode="floor", metric=ACC_PERCENT, floor=0.97, printed=0.9894,
-         note="4에포크로 상한. 2에포크 실측 0.9828 → 상향 후 0.987 안팎 예상"),
+         marker="모델 정확도", mode="floor", metric=ACC_PERCENT, floor=0.97, printed=0.9912,
+         note="상한 없음(10에포크). 저장 출력을 99.12%로 갱신함(2026-08-18)"),
     dict(chapter=4, section="IV-6", file="RNN_hello world.ipynb",
          marker="예측된 다음 글자", mode="complete",
          note="input() 반복. 대역이 'exit'로 빠져나온다"),
@@ -265,8 +265,13 @@ def main() -> int:
             f.write("| | 절 | 노트북 | 결과 | 소요 |\n|---|---|---|---|---|\n")
             for r in results:
                 c = r["case"]
+                detail = r["detail"]
+                # 에포크를 낮춰 돌렸다면 표에서 바로 보이게 한다.
+                # 로그를 뒤져야만 알 수 있으면 실측값의 근거를 놓치게 된다.
+                for asked, capped in r.get("epochs_capped") or []:
+                    detail += f" · 에포크 {asked}→{capped}"
                 f.write(f"| {ICON[r['status']]} | {c['section']} | `{c['file']}` | "
-                        f"{r['detail']} | {r['seconds']:.0f}초 |\n")
+                        f"{detail} | {r['seconds']:.0f}초 |\n")
             f.write(f"\n**정상 {ok} · 측정 {meas} · 실패 {fail} · 합계 {total_time/60:.1f}분**\n")
             if meas:
                 f.write("\n📏 는 값을 재기만 한 것이다. 이 값을 보고 임계값을 정한 뒤 "
