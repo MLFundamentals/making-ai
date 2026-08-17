@@ -1,9 +1,9 @@
 {
   "checked_at": "2026-08-17",
-  "checked_at_iso": "2026-08-17T14:26:15+09:00",
+  "checked_at_iso": "2026-08-17T14:41:26+09:00",
   "state": "ok",
   "check_result": "전체 정상",
-  "elapsed_sec": 1.2,
+  "elapsed_sec": 2.1,
   "counts": {
     "OK": 24,
     "WARN": 0,
@@ -22,7 +22,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 18,016 bytes",
-      "elapsed_ms": 214,
+      "elapsed_ms": 129,
       "extra": {
         "final_url": "https://mlfundamentals.github.io/making-ai/",
         "content_length": "18016"
@@ -39,7 +39,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 1,922 bytes",
-      "elapsed_ms": 222,
+      "elapsed_ms": 108,
       "extra": {
         "final_url": "https://mlfundamentals.github.io/",
         "content_length": "1922"
@@ -56,7 +56,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
-      "elapsed_ms": 714,
+      "elapsed_ms": 593,
       "extra": {
         "mode": "html"
       }
@@ -72,7 +72,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
-      "elapsed_ms": 477,
+      "elapsed_ms": 483,
       "extra": {
         "mode": "html"
       }
@@ -88,7 +88,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
-      "elapsed_ms": 517,
+      "elapsed_ms": 404,
       "extra": {
         "mode": "html"
       }
@@ -104,7 +104,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "100행 × 9열 · 헤더: Age, Gender, BMI",
-      "elapsed_ms": 415,
+      "elapsed_ms": 504,
       "extra": {
         "columns": 9,
         "data_rows": 100,
@@ -132,7 +132,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "10행 × 4열 · 헤더: BMI, Exercise_per_week, Diet",
-      "elapsed_ms": 377,
+      "elapsed_ms": 770,
       "extra": {
         "columns": 4,
         "data_rows": 10,
@@ -155,7 +155,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "2,000행 × 7열 · 헤더: Age, Gender, Pages_Viewed",
-      "elapsed_ms": 344,
+      "elapsed_ms": 543,
       "extra": {
         "columns": 7,
         "data_rows": 2000,
@@ -181,7 +181,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "1,200행 × 26열 · 헤더: match_id, fit_b, fit_r",
-      "elapsed_ms": 241,
+      "elapsed_ms": 714,
       "extra": {
         "columns": 26,
         "data_rows": 1200,
@@ -212,7 +212,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 14,628,807 bytes",
-      "elapsed_ms": 498,
+      "elapsed_ms": 309,
       "extra": {
         "final_url": "https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt",
         "content_length": "14628807"
@@ -229,7 +229,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 4,893,335 bytes",
-      "elapsed_ms": 209,
+      "elapsed_ms": 102,
       "extra": {
         "final_url": "https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt",
         "content_length": "4893335"
@@ -246,7 +246,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 862,182,613 bytes · 리다이렉트 → https://downloads.cs.stanford.edu/nlp/data/glove.6B.zip",
-      "elapsed_ms": 241,
+      "elapsed_ms": 965,
       "extra": {
         "final_url": "https://downloads.cs.stanford.edu/nlp/data/glove.6B.zip",
         "content_length": "862182613"
@@ -263,7 +263,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 305,258 bytes",
-      "elapsed_ms": 534,
+      "elapsed_ms": 406,
       "extra": {
         "final_url": "https://www.tensorflow.org/datasets/catalog/cats_vs_dogs",
         "content_length": "305258"
@@ -280,7 +280,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 302,396 bytes",
-      "elapsed_ms": 758,
+      "elapsed_ms": 1545,
       "extra": {
         "final_url": "https://www.tensorflow.org/datasets/catalog/imdb_reviews",
         "content_length": "302396"
@@ -297,7 +297,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2024-09-26",
-      "elapsed_ms": 96,
+      "elapsed_ms": 44,
       "extra": {
         "model_id": "deepset/xlm-roberta-base-squad2",
         "downloads": 82104,
@@ -315,7 +315,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2022-03-01",
-      "elapsed_ms": 80,
+      "elapsed_ms": 24,
       "extra": {
         "model_id": "digit82/kobart-summarization",
         "downloads": 7119,
@@ -333,7 +333,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2024-02-14",
-      "elapsed_ms": 84,
+      "elapsed_ms": 27,
       "extra": {
         "model_id": "facebook/nllb-200-distilled-600M",
         "downloads": 1273418,
@@ -351,7 +351,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2023-09-28",
-      "elapsed_ms": 84,
+      "elapsed_ms": 43,
       "extra": {
         "model_id": "facebook/mbart-large-50-many-to-many-mmt",
         "downloads": 51094,
@@ -369,7 +369,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2023-06-12",
-      "elapsed_ms": 81,
+      "elapsed_ms": 25,
       "extra": {
         "model_id": "klue/bert-base",
         "downloads": 41844,
@@ -387,7 +387,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2021-09-23",
-      "elapsed_ms": 79,
+      "elapsed_ms": 26,
       "extra": {
         "model_id": "skt/kogpt2-base-v2",
         "downloads": 8734,
@@ -405,7 +405,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2025-02-03",
-      "elapsed_ms": 83,
+      "elapsed_ms": 24,
       "extra": {
         "model_id": "Salesforce/blip-image-captioning-base",
         "downloads": 2164492,
@@ -423,7 +423,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2024-02-29",
-      "elapsed_ms": 87,
+      "elapsed_ms": 28,
       "extra": {
         "model_id": "openai/whisper-small",
         "downloads": 2601990,
@@ -441,7 +441,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2024-07-10",
-      "elapsed_ms": 85,
+      "elapsed_ms": 42,
       "extra": {
         "model_id": "stabilityai/sd-turbo",
         "downloads": 573003,
@@ -459,7 +459,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2023-11-17",
-      "elapsed_ms": 84,
+      "elapsed_ms": 31,
       "extra": {
         "model_id": "facebook/musicgen-small",
         "downloads": 376912,
