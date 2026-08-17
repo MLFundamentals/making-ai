@@ -76,6 +76,7 @@ class Asset:
     check: str
     severity: str
     section: str = ""
+    allow_redirect: bool = False
     notes: str = ""
 
     @property
@@ -84,10 +85,9 @@ class Asset:
         if self.check == "hf":
             return f"https://huggingface.co/api/models/{self.target}"
         if self.check == "gsheet":
-            return (
-                f"https://docs.google.com/spreadsheets/d/{self.target}"
-                "/gviz/tq?tqx=out:csv&sheet=Sheet1"
-            )
+            # 노트북은 gspread의 spreadsheet.sheet1(=첫 번째 탭)을 읽는다.
+            # sheet 파라미터를 주지 않으면 gviz도 첫 번째 탭을 반환하므로 의미가 일치한다.
+            return f"https://docs.google.com/spreadsheets/d/{self.target}/gviz/tq?tqx=out:csv"
         if self.check == "drive":
             if os.getenv("GDRIVE_API_KEY"):
                 key = urllib.parse.quote(os.environ["GDRIVE_API_KEY"])
@@ -217,7 +217,8 @@ def check_http(asset: Asset, timeout: int, retries: int) -> tuple[str, str, dict
         if size:
             detail += f" · {int(size):,} bytes"
         if resp.final_url.rstrip("/") != url.rstrip("/"):
-            return "WARN", f"{detail} · 리다이렉트 → {resp.final_url}", extra
+            note = f"{detail} · 리다이렉트 → {resp.final_url}"
+            return ("OK" if asset.allow_redirect else "WARN"), note, extra
         return "OK", detail, extra
 
     if resp.status in (301, 302, 307, 308):
@@ -418,6 +419,8 @@ def load_assets(path: Path) -> list[Asset]:
                 check=(row.get("check") or "").strip(),
                 severity=(row.get("severity") or "").strip(),
                 section=(row.get("section") or "").strip(),
+                allow_redirect=(row.get("allow_redirect") or "").strip().lower()
+                in ("yes", "y", "true", "1"),
                 notes=(row.get("notes") or "").strip(),
             )
             if asset.id in seen:

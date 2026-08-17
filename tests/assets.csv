@@ -1,36 +1,36 @@
-id,category,name,target,check,severity,section,notes
-page-making-ai,entry,실습자료실 페이지 (책 인쇄 주소),https://mlfundamentals.github.io/making-ai/,http,critical,I-3,단일 진입점 · 최우선 점검 대상
-page-series-root,entry,시리즈 루트 페이지,https://mlfundamentals.github.io/,http,high,-,페이지에서만 안내
-drive-folder-code,drive,실습코드 폴더,1kImMkEVKgCcu7n7dU8-guOGb7MkqWREb,drive,critical,I-3,노트북 53개 배포 미러
-drive-folder-data,drive,실습데이터 폴더,1ybMKV8sAiXjQA8hbHaFp-qF7Rg5vlpV4,drive,critical,I-3,수동 확인 파일 11개 포함
-drive-folder-root,drive,상위 폴더,1dXEvlmi16QCpLlKDdsKSlX5uVrRyvy9j,drive,high,I-3,코드·데이터 폴더의 부모
-sheet-hypertension-3,gsheet,Hypertension_Prediction_Dataset_01,1eC4YnMRr5a6v2EmxcZBUb-mGv6k8Qz-8UcNTSoeM2qU,gsheet,critical,III-3,코드에 ID 하드코딩
-sheet-hypertension-8,gsheet,Hypertension_Prediction_Dataset_8paras,12RmvY2KI-6UcMEHXX4E65R_oso4965jNpgAbKeIgI9c,gsheet,critical,III-4,코드에 ID 하드코딩
-sheet-shopping,gsheet,Shopping Behavior Dataset,1MI-HWfwR5-Dp-A8dJ4DfOVGGau-9QdysfvsQHvZ5VY0,gsheet,critical,III-5,2000행 기대
-sheet-matches-record,gsheet,Matches_Record,1SyBg64IX_uX290hsIwGH3zZwe_Aeb1SBLx146zSGIro,gsheet,high,IX-3,본문은 export?format=csv 사용
-data-nsmc-train,dataset,NSMC 학습 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt,http,high,VI-2,GitHub raw
-data-nsmc-test,dataset,NSMC 평가 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt,http,high,VI-2,GitHub raw
-data-glove-6b,dataset,GloVe 6B 임베딩,http://nlp.stanford.edu/data/glove.6B.zip,http,high,VI-3,http · 대용량(약 822MB) · HEAD만 수행
-data-tfds-cats-vs-dogs,dataset,TFDS cats_vs_dogs,https://www.tensorflow.org/datasets/catalog/cats_vs_dogs,http,medium,VI-4,카탈로그 페이지로 간접 확인
-data-tfds-imdb-reviews,dataset,TFDS imdb_reviews,https://www.tensorflow.org/datasets/catalog/imdb_reviews,http,medium,VI-5,카탈로그 페이지로 간접 확인
-hf-xlm-roberta-squad2,hf_model,다국어 QA,deepset/xlm-roberta-base-squad2,hf,high,VI-9,
-hf-kobart-summarization,hf_model,한국어 요약,digit82/kobart-summarization,hf,high,VI-9,
-hf-nllb-600m,hf_model,다국어 번역,facebook/nllb-200-distilled-600M,hf,high,VI-9,레인 B 제외 대상(용량)
-hf-mbart-large-50,hf_model,한-영 번역,facebook/mbart-large-50-many-to-many-mmt,hf,high,VI-9,레인 B 제외 대상(용량)
-hf-klue-bert-base,hf_model,한국어 BERT,klue/bert-base,hf,high,VI-10;VI-11,
-hf-kogpt2-base-v2,hf_model,한국어 GPT,skt/kogpt2-base-v2,hf,high,VI-11;VII-1,
-hf-blip-captioning,hf_model,이미지 캡셔닝,Salesforce/blip-image-captioning-base,hf,high,VIII-2,레인 B 제외 대상(용량)
-hf-whisper-small,hf_model,음성인식,openai/whisper-small,hf,high,VIII-3,레인 B 제외 대상(용량)
-hf-sd-turbo,hf_model,이미지 생성,stabilityai/sd-turbo,hf,high,VII-2,레인 B 제외 대상(용량) · 라이선스 게이트 확인
-hf-musicgen-small,hf_model,음악 생성,facebook/musicgen-small,hf,high,VII-3,레인 B 제외 대상(용량)
-file-patient-registration,drive_file,Patient Registration Data,실습데이터/Patient Registration Data,manual,medium,II-2-3,독자가 직접 여는 파일
-file-patient-clinical,drive_file,Patient Clinical Data,실습데이터/Patient Clinical Data,manual,medium,II-2-3,독자가 직접 여는 파일
-file-patient-monitoring,drive_file,Patient Health Monitoring Data,실습데이터/Patient Health Monitoring Data,manual,medium,II-2-3,독자가 직접 여는 파일
-file-patient-registration-proc,drive_file,Patient Registration Data_Processed,실습데이터/Patient Registration Data_Processed,manual,medium,II-2-4,독자가 직접 여는 파일
-file-patient-monitoring-proc,drive_file,Patient Health Monitoring Data_Processed,실습데이터/Patient Health Monitoring Data_Processed,manual,medium,II-2-4,독자가 직접 여는 파일
-file-population-status,drive_file,Data_Population Status_Kor_20251227,실습데이터/Data_Population Status_Kor_20251227,manual,medium,II-1,정형 데이터 예시
-file-video-teded,drive_file,[TED-Ed] Sample Video_30s.mp4,실습데이터/[TED-Ed] Sample Video_30s.mp4,manual,medium,VIII-3,영어 샘플
-file-video-cosmoswag,drive_file,[cosmoswag_kr] Sample Video_30s.mp4,실습데이터/[cosmoswag_kr] Sample Video_30s.mp4,manual,medium,VIII-3,한국어 샘플
-file-video-sora-woman,drive_file,[Sora] smiling woman.mp4,실습데이터/[Sora] smiling woman.mp4,manual,medium,VIII-2,VQA 체험
-file-image-dalle-giftbox,drive_file,[DALL·E] gift box.png,실습데이터/[DALL·E] gift box.png,manual,medium,VIII-2,VQA 체험
-file-audio-crowd-cheers,drive_file,[Pixabay] crowd-cheers.mp3,실습데이터/[Pixabay] crowd-cheers.mp3,manual,medium,VIII-2,VQA 체험
+id,category,name,target,check,severity,section,allow_redirect,notes
+page-making-ai,entry,실습자료실 페이지 (책 인쇄 주소),https://mlfundamentals.github.io/making-ai/,http,critical,I-3,,단일 진입점 · 최우선 점검 대상
+page-series-root,entry,시리즈 루트 페이지,https://mlfundamentals.github.io/,http,high,-,,페이지에서만 안내
+drive-folder-code,drive,실습코드 폴더,1kImMkEVKgCcu7n7dU8-guOGb7MkqWREb,drive,critical,I-3,,노트북 53개 배포 미러
+drive-folder-data,drive,실습데이터 폴더,1ybMKV8sAiXjQA8hbHaFp-qF7Rg5vlpV4,drive,critical,I-3,,수동 확인 파일 11개 포함
+drive-folder-root,drive,상위 폴더,1dXEvlmi16QCpLlKDdsKSlX5uVrRyvy9j,drive,high,I-3,,코드·데이터 폴더의 부모
+sheet-hypertension-8paras,gsheet,고혈압 8파라미터 (III-4 사용),1eC4YnMRr5a6v2EmxcZBUb-mGv6k8Qz-8UcNTSoeM2qU,gsheet,critical,III-4,,100행×9열 기대 · 코드에 ID 하드코딩
+sheet-hypertension-3paras,gsheet,고혈압 3파라미터 (III-3 사용),12RmvY2KI-6UcMEHXX4E65R_oso4965jNpgAbKeIgI9c,gsheet,critical,III-3,,10행×4열 기대 · 코드에 ID 하드코딩
+sheet-shopping,gsheet,Shopping Behavior Dataset,1MI-HWfwR5-Dp-A8dJ4DfOVGGau-9QdysfvsQHvZ5VY0,gsheet,critical,III-5,,2000행 기대
+sheet-matches-record,gsheet,Matches_Record,1SyBg64IX_uX290hsIwGH3zZwe_Aeb1SBLx146zSGIro,gsheet,high,IX-3,,본문은 export?format=csv 사용
+data-nsmc-train,dataset,NSMC 학습 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt,http,high,VI-2,,GitHub raw
+data-nsmc-test,dataset,NSMC 평가 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt,http,high,VI-2,,GitHub raw
+data-glove-6b,dataset,GloVe 6B 임베딩,http://nlp.stanford.edu/data/glove.6B.zip,http,high,VI-3,yes,http · 약 822MB · downloads.cs.stanford.edu로 리다이렉트되는 것이 정상
+data-tfds-cats-vs-dogs,dataset,TFDS cats_vs_dogs,https://www.tensorflow.org/datasets/catalog/cats_vs_dogs,http,medium,VI-4,,카탈로그 페이지로 간접 확인
+data-tfds-imdb-reviews,dataset,TFDS imdb_reviews,https://www.tensorflow.org/datasets/catalog/imdb_reviews,http,medium,VI-5,,카탈로그 페이지로 간접 확인
+hf-xlm-roberta-squad2,hf_model,다국어 QA,deepset/xlm-roberta-base-squad2,hf,high,VI-9,,
+hf-kobart-summarization,hf_model,한국어 요약,digit82/kobart-summarization,hf,high,VI-9,,
+hf-nllb-600m,hf_model,다국어 번역,facebook/nllb-200-distilled-600M,hf,high,VI-9,,레인 B 제외 대상(용량)
+hf-mbart-large-50,hf_model,한-영 번역,facebook/mbart-large-50-many-to-many-mmt,hf,high,VI-9,,레인 B 제외 대상(용량)
+hf-klue-bert-base,hf_model,한국어 BERT,klue/bert-base,hf,high,VI-10;VI-11,,
+hf-kogpt2-base-v2,hf_model,한국어 GPT,skt/kogpt2-base-v2,hf,high,VI-11;VII-1,,
+hf-blip-captioning,hf_model,이미지 캡셔닝,Salesforce/blip-image-captioning-base,hf,high,VIII-2,,레인 B 제외 대상(용량)
+hf-whisper-small,hf_model,음성인식,openai/whisper-small,hf,high,VIII-3,,레인 B 제외 대상(용량)
+hf-sd-turbo,hf_model,이미지 생성,stabilityai/sd-turbo,hf,high,VII-2,,레인 B 제외 대상(용량) · 라이선스 게이트 확인
+hf-musicgen-small,hf_model,음악 생성,facebook/musicgen-small,hf,high,VII-3,,레인 B 제외 대상(용량)
+file-patient-registration,drive_file,Patient Registration Data,실습데이터/Patient Registration Data,manual,medium,II-2-3,,독자가 직접 여는 파일
+file-patient-clinical,drive_file,Patient Clinical Data,실습데이터/Patient Clinical Data,manual,medium,II-2-3,,독자가 직접 여는 파일
+file-patient-monitoring,drive_file,Patient Health Monitoring Data,실습데이터/Patient Health Monitoring Data,manual,medium,II-2-3,,독자가 직접 여는 파일
+file-patient-registration-proc,drive_file,Patient Registration Data_Processed,실습데이터/Patient Registration Data_Processed,manual,medium,II-2-4,,독자가 직접 여는 파일
+file-patient-monitoring-proc,drive_file,Patient Health Monitoring Data_Processed,실습데이터/Patient Health Monitoring Data_Processed,manual,medium,II-2-4,,독자가 직접 여는 파일
+file-population-status,drive_file,Data_Population Status_Kor_20251227,실습데이터/Data_Population Status_Kor_20251227,manual,medium,II-1,,정형 데이터 예시
+file-video-teded,drive_file,[TED-Ed] Sample Video_30s.mp4,실습데이터/[TED-Ed] Sample Video_30s.mp4,manual,medium,VIII-3,,영어 샘플
+file-video-cosmoswag,drive_file,[cosmoswag_kr] Sample Video_30s.mp4,실습데이터/[cosmoswag_kr] Sample Video_30s.mp4,manual,medium,VIII-3,,한국어 샘플
+file-video-sora-woman,drive_file,[Sora] smiling woman.mp4,실습데이터/[Sora] smiling woman.mp4,manual,medium,VIII-2,,VQA 체험
+file-image-dalle-giftbox,drive_file,[DALL·E] gift box.png,실습데이터/[DALL·E] gift box.png,manual,medium,VIII-2,,VQA 체험
+file-audio-crowd-cheers,drive_file,[Pixabay] crowd-cheers.mp3,실습데이터/[Pixabay] crowd-cheers.mp3,manual,medium,VIII-2,,VQA 체험
