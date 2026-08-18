@@ -191,10 +191,23 @@ CASES = [
          expect_text=["amazing", "waiting", "was"],
          note="지침서가 의심 후보로 지목한 keras Tokenizer·pad_sequences 를 쓴다. "
               "임베딩 값 자체는 씨앗이 없어 매번 다르므로, 단어 목록만 확인한다"),
+    dict(chapter=6, section="VI-9", file="NLP_Transformers-pipeline.ipynb",
+         cells=[0, 1],
+         marker="[대역] 화면을 띄우는 대신", mode="complete",
+         note="셀 3개가 서로 독립된 프로그램이다(각자 import·모델·Interface를 갖는다). "
+              "**셀 2는 NLLB-200-600M(약 2.4GB)이라 레인 B 제외 대상**이므로 0·1만 돌린다. "
+              "셀 0 질의응답(xlm-roberta) · 셀 1 요약(KoBART). 셀 2는 레인 C에서 확인할 것"),
+    dict(chapter=6, section="VI-10", file="NLP_BERT_pipeline.ipynb",
+         marker="[대역] 화면을 띄우는 대신", mode="complete",
+         note="셀 3개 모두 작은 모델이라 통째로 돌린다 — bert-base-uncased(마스크 채우기) · "
+              "jhgan/ko-sbert-nli(문장 유사도) · distilbert-sst2(감정 분석). "
+              "sentence-transformers 설치가 필요하다"),
     dict(chapter=6, section="VI-11", file="NLP_GPT_pipeline.ipynb",
          marker="[대역] 화면을 띄우는 대신", mode="complete",
+         gradio_max_chars=300,
          note="Gradio 대역의 첫 실전 시험. KoGPT2를 실제로 내려받아 문장을 생성한다. "
-              "생성 결과는 매번 다르므로 '대역이 fn을 실제로 불렀는가'만 본다"),
+              "생성 결과는 매번 다르므로 '대역이 fn을 실제로 불렀는가'만 본다. "
+              "출력 상한 300자는 실측 근거가 있다 — 정상 85자 vs max_length가 무시됐을 때 721자"),
 ]
 
 
@@ -240,12 +253,29 @@ def rewrite_notebook_only_lines(src: str) -> tuple[str, list[str]]:
     return "\n".join(out), skipped
 
 
-def load_source(filename: str) -> tuple[str, list[str]]:
-    """노트북의 코드 셀을 순서대로 이어 붙인다 (파일은 건드리지 않는다)."""
+def load_source(filename: str, cells: list[int] | None = None) -> tuple[str, list[str]]:
+    """노트북의 코드 셀을 순서대로 이어 붙인다 (파일은 건드리지 않는다).
+
+    cells 를 주면 **그 번호의 코드 셀만** 골라 잇는다.
+    한 노트북 안에 서로 독립된 프로그램이 여러 개 들어 있고, 그중 하나가
+    레인 B 제외 대상(대형 모델)일 때 쓴다. 번호는 코드 셀만 센 것이다.
+
+    ⚠ 이 기능은 위험하다. 셀을 빼면 그만큼 점검되지 않는데 결과는 초록불이다.
+      `skip-test` 태그를 버린 이유와 같은 함정이므로, 반드시
+      ① 빠진 셀이 남은 셀과 독립인지 확인하고 ② note 에 이유를 적고
+      ③ 실행기가 표에 '셀 N개 중 M개만' 이라고 드러내게 한다.
+    """
     with open(os.path.join(NOTEBOOKS, filename), encoding="utf-8") as f:
         nb = json.load(f)
-    cells = [c for c in nb["cells"] if c["cell_type"] == "code"]
-    return rewrite_notebook_only_lines("\n\n".join("".join(c["source"]) for c in cells))
+    code_cells = [c for c in nb["cells"] if c["cell_type"] == "code"]
+    if cells is not None:
+        picked = []
+        for i in cells:
+            if i >= len(code_cells):
+                raise IndexError(f"{filename}: 코드 셀이 {len(code_cells)}개뿐인데 {i}번을 지정했다")
+            picked.append(code_cells[i])
+        code_cells = picked
+    return rewrite_notebook_only_lines("\n\n".join("".join(c["source"]) for c in code_cells))
 
 
 def run_one(case: dict) -> dict:
@@ -253,7 +283,7 @@ def run_one(case: dict) -> dict:
     out = {"case": case, "status": "FAIL", "detail": "", "seconds": 0.0}
 
     try:
-        src, skipped_installs = load_source(name)
+        src, skipped_installs = load_source(name, case.get("cells"))
     except FileNotFoundError:
         out["detail"] = "노트북 파일을 찾을 수 없다 — 파일명이 바뀌었는지 확인할 것."
         return out
@@ -305,6 +335,21 @@ def run_one(case: dict) -> dict:
         out["tail"] = buf.getvalue()[-800:]
         return out
     out["gradio_runs"] = prelude.gradio_runs()
+
+    # Gradio 출력 길이 상한.
+    # VI-11에서 배운 것이다: max_length 인자가 조용히 무시되자 출력이 85자에서
+    # 721자로 뛰었다. 터지지도 값이 어긋나지도 않아 점검은 초록불이었다.
+    # 인자가 무시되면 길이가 껑충 뛰므로, 길이에 선을 그어 두면 같은 종류의
+    # '조용한 고장'을 자동으로 잡을 수 있다.
+    # ⚠ 상한은 반드시 실측 후에 정한다. 값을 재 보지 않은 노트북에는 걸지 않는다.
+    ceiling = case.get("gradio_max_chars")
+    if ceiling:
+        for g in out["gradio_runs"]:
+            if g["chars"] > ceiling:
+                out["detail"] = (f"Gradio 출력이 {g['chars']}자로 상한 {ceiling}자를 넘었다 "
+                                 f"— 인자가 무시되고 있을 수 있다 ({g['title']})")
+                out["tail"] = buf.getvalue()[-800:]
+                return out
 
     text = buf.getvalue()
     out["epochs_capped"] = prelude.epoch_cap_applied()
@@ -434,6 +479,8 @@ def main() -> int:
             print(f"     ⚠ 첫 실행에서는 실패했다: {r['retried_after']}")
         for g in r.get("gradio_runs") or []:
             print(f"     Gradio 화면 대신 직접 실행: {g['title']} → 출력 {g['chars']}자")
+        if r["case"].get("cells") is not None:
+            print(f"     ⚠ 코드 셀 일부만 실행했다: {r['case']['cells']}번")
         if r.get("skipped_installs"):
             print(f"     건너뛴 설치 줄: {' / '.join(r['skipped_installs'])}")
         if r.get("epochs_capped"):
@@ -469,6 +516,12 @@ def main() -> int:
                 # 로그를 뒤져야만 알 수 있으면 실측값의 근거를 놓치게 된다.
                 for asked, capped in r.get("epochs_capped") or []:
                     detail += f" · 에포크 {asked}→{capped}"
+                # Gradio 출력 길이도 표에 남긴다. 인자가 조용히 무시되면
+                # 이 숫자가 껑충 뛰므로, 상한을 정하는 근거이자 조기 신호가 된다.
+                for g in r.get("gradio_runs") or []:
+                    detail += f" · Gradio 출력 {g['chars']}자"
+                if c.get("cells") is not None:
+                    detail += f" · **셀 {c['cells']}번만 실행**"
                 f.write(f"| {ICON[r['status']]} | {c['section']} | `{c['file']}` | "
                         f"{detail} | {r['seconds']:.0f}초 |\n")
             f.write(f"\n**정상 {ok} · 측정 {meas} · 실패 {fail} · 합계 {total_time/60:.1f}분**\n")
