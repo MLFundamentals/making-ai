@@ -194,12 +194,39 @@ else:                                                   # pragma: no cover
             os.chdir(before)
 
 
-def load_source(filename: str) -> str:
+# 노트북에만 있는 문법. 파이썬은 이 줄들을 이해하지 못하고 SyntaxError 로 죽는다.
+#   !pip install ...  → 지운다. 워크플로가 미리 설치하므로 다시 깔 필요가 없고,
+#                       빠뜨린 라이브러리가 있으면 import 에서 요란하게 드러난다.
+#   %매직            → 지운다 (%matplotlib inline 등, 화면 표시용이라 서버에선 무의미)
+#   그 밖의 !명령     → 실제로 실행한다. !wget·!unzip 처럼 자료를 내려받는 줄은
+#                       진짜로 돌아야 노트북이 이어지기 때문이다.
+SHELL_LINE = re.compile(r"^(\s*)([!%])(.+?)\s*$")
+PIP_LINE = re.compile(r"^(pip3?|%pip)\b|^\S*python\S*\s+-m\s+pip\b")
+
+
+def rewrite_notebook_only_lines(src: str) -> tuple[str, list[str]]:
+    """셸·매직 줄을 파이썬이 실행할 수 있는 형태로 바꾼다. (바뀐 코드, 건너뛴 설치줄)"""
+    out, skipped = [], []
+    for line in src.split("\n"):
+        m = SHELL_LINE.match(line)
+        if not m:
+            out.append(line)
+            continue
+        indent, sigil, body = m.groups()
+        if sigil == "%" or PIP_LINE.match(body.strip()):
+            skipped.append(body.strip())
+            out.append(f"{indent}# [실행기가 건너뜀] {sigil}{body}")
+        else:
+            out.append(f"{indent}__prelude_shell__({body.strip()!r})")
+    return "\n".join(out), skipped
+
+
+def load_source(filename: str) -> tuple[str, list[str]]:
     """노트북의 코드 셀을 순서대로 이어 붙인다 (파일은 건드리지 않는다)."""
     with open(os.path.join(NOTEBOOKS, filename), encoding="utf-8") as f:
         nb = json.load(f)
     cells = [c for c in nb["cells"] if c["cell_type"] == "code"]
-    return "\n\n".join("".join(c["source"]) for c in cells)
+    return rewrite_notebook_only_lines("\n\n".join("".join(c["source"]) for c in cells))
 
 
 def run_one(case: dict) -> dict:
@@ -207,7 +234,7 @@ def run_one(case: dict) -> dict:
     out = {"case": case, "status": "FAIL", "detail": "", "seconds": 0.0}
 
     try:
-        src = load_source(name)
+        src, skipped_installs = load_source(name)
     except FileNotFoundError:
         out["detail"] = "노트북 파일을 찾을 수 없다 — 파일명이 바뀌었는지 확인할 것."
         return out
@@ -228,7 +255,7 @@ def run_one(case: dict) -> dict:
     started = time.time()
     try:
         prelude.install(name, verbose=False)
-        namespace = {"__name__": "__main__"}
+        namespace = {"__name__": "__main__", "__prelude_shell__": prelude.shell}
         # 노트북을 빈 임시 폴더에서 돌린다. Colab의 /content 자리에 해당한다.
         # I-5-3(Pandas)이 checkup.csv 를 만들기 때문에, 저장소 안에서 돌리면
         # 점검을 한 번 할 때마다 없던 파일이 하나씩 생긴다.
@@ -249,6 +276,17 @@ def run_one(case: dict) -> dict:
         return out
 
     out["seconds"] = time.time() - started
+    out["skipped_installs"] = skipped_installs
+
+    # Gradio 대역이 함수를 부르지 못한 채 넘어갔다면 실패로 본다.
+    # 모델만 불러오고 번역·요약·생성은 한 번도 안 해 본 초록불은 초록불이 아니다.
+    blocked = prelude.gradio_blocked()
+    if blocked:
+        out["detail"] = "Gradio 대역이 실행할 함수를 찾지 못했다: " + " / ".join(blocked)
+        out["tail"] = buf.getvalue()[-800:]
+        return out
+    out["gradio_runs"] = prelude.gradio_runs()
+
     text = buf.getvalue()
     out["epochs_capped"] = prelude.epoch_cap_applied()
 
@@ -375,6 +413,10 @@ def main() -> int:
         print(f"     {r['detail']}  ({r['seconds']:.1f}초)")
         if r.get("retried_after"):
             print(f"     ⚠ 첫 실행에서는 실패했다: {r['retried_after']}")
+        for g in r.get("gradio_runs") or []:
+            print(f"     Gradio 화면 대신 직접 실행: {g['title']} → 출력 {g['chars']}자")
+        if r.get("skipped_installs"):
+            print(f"     건너뛴 설치 줄: {' / '.join(r['skipped_installs'])}")
         if r.get("epochs_capped"):
             for asked, capped in r["epochs_capped"]:
                 print(f"     에포크 {asked} → {capped} 로 낮춰 실행")

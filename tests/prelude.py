@@ -373,6 +373,105 @@ def _install_headless_matplotlib() -> None:
 
 
 # ---------------------------------------------------------------------------
+# 6. Gradio — 화면을 띄우는 대신, 화면에 미리 채워져 있던 기본값으로 한 번 돌려 본다
+#
+# `.launch()`는 웹 화면을 띄우고 사람이 닫을 때까지 기다린다. 자동 점검에서는
+# 영원히 끝나지 않는다는 뜻이다.
+#
+# 그렇다고 `.launch()`를 '아무것도 하지 않는 함수'로 바꾸면 안 된다.
+# 이 노트북들의 알맹이는 gr.Interface(fn=...) 의 fn 안에 들어 있고, fn 은
+# 사람이 화면에서 버튼을 눌러야 비로소 실행된다. 그냥 넘기면 모델을 불러오는
+# 데까지만 확인하고 **번역·요약·생성이 실제로 되는지는 하나도 보지 않은 채**
+# 초록불이 켜진다. 태그 방식을 버린 것과 똑같은 종류의 실패다.
+#
+# 다행히 저자가 모든 입력 칸에 value= 로 예시값을 넣어 두었다. 독자가 화면을
+# 열면 이미 채워져 있는 그 값이다. 대역은 그 값을 그대로 꺼내 fn 을 한 번
+# 호출한다. 즉 **독자가 화면을 열고 버튼을 한 번 누른 것과 같은 일**을 한다.
+# ---------------------------------------------------------------------------
+_gradio_runs: list[dict] = []
+_gradio_blocked: list[str] = []
+
+
+def _install_gradio() -> None:
+    try:
+        import gradio as gr
+    except ImportError:
+        return                                    # 설치되지 않았으면 할 일이 없다
+
+    if getattr(gr.Blocks.launch, "_prelude", False):
+        return                                    # 한 프로세스에서 두 번 걸지 않는다
+
+    def launch(self, *args, **kwargs):            # noqa: ANN001
+        fn = getattr(self, "fn", None)
+        comps = getattr(self, "input_components", None)
+
+        if fn is None or comps is None:
+            # gr.Interface 가 아니라 gr.Blocks 를 직접 쓴 경우. 부를 함수가 없다.
+            _gradio_blocked.append("gr.Interface 가 아니어서 호출할 함수를 찾지 못했다")
+            return None, "", ""
+
+        values, missing = [], []
+        for c in comps:
+            v = getattr(c, "value", None)
+            if v is None:
+                missing.append(type(c).__name__)   # Image·Video 처럼 예시값이 없는 칸
+            values.append(v)
+
+        if missing:
+            # 예시값이 없으면 지어내지 않는다. 가짜 입력으로 통과시키면
+            # 그것 역시 아무것도 검증하지 않은 초록불이 된다.
+            _gradio_blocked.append(
+                f"입력 칸에 예시값(value=)이 없어 호출하지 못했다: {', '.join(missing)}")
+            return None, "", ""
+
+        label = getattr(self, "title", None) or fn.__name__
+        print(f"\n[대역] 화면을 띄우는 대신 기본값으로 한 번 실행한다 — {label}")
+        for c, v in zip(comps, values):
+            print(f"   입력 {getattr(c, 'label', '?')}: {str(v)[:60]}")
+
+        result = fn(*values)                       # 여기서 터지면 그대로 실패로 잡힌다
+
+        text = result if isinstance(result, str) else repr(result)
+        _gradio_runs.append(dict(title=label, chars=len(text)))
+        print(f"   출력({len(text)}자): {text[:300]}")
+        if len(text) > 300:
+            print("   ...")
+        return None, "", ""
+
+    launch._prelude = True
+    gr.Blocks.launch = launch
+
+
+def gradio_runs() -> list[dict]:
+    """대역이 실제로 불러 본 Gradio 함수 목록."""
+    return list(_gradio_runs)
+
+
+def gradio_blocked() -> list[str]:
+    """`.launch()`가 있었는데 함수를 부르지 못한 사유. 비어 있어야 정상이다."""
+    return list(_gradio_blocked)
+
+
+# ---------------------------------------------------------------------------
+# 7. 셸 명령(`!wget` 같은 줄) — 노트북에만 있는 문법이라 파이썬이 이해하지 못한다
+#
+# `!pip install` 은 실행기가 아예 지워 버린다(워크플로가 미리 설치하므로).
+# 그 밖의 `!` 줄은 이 함수를 거쳐 진짜로 실행된다. 자료를 내려받는 줄
+# (`!wget`, `!unzip`)은 실제로 돌아야 노트북이 이어지기 때문이다.
+# ---------------------------------------------------------------------------
+def shell(command: str) -> None:
+    import subprocess
+    print(f"[대역] 셸 실행: {command}")
+    done = subprocess.run(command, shell=True, capture_output=True, text=True)
+    if done.stdout.strip():
+        print(done.stdout.strip()[:500])
+    if done.returncode != 0:
+        raise PreludeError(
+            f"셸 명령이 실패했다 (종료 코드 {done.returncode}): {command}\n"
+            f"{done.stderr.strip()[:500]}")
+
+
+# ---------------------------------------------------------------------------
 # 진입점
 # ---------------------------------------------------------------------------
 def install(notebook: str, inputs: list[str] | None = None, verbose: bool = True) -> None:
@@ -385,10 +484,13 @@ def install(notebook: str, inputs: list[str] | None = None, verbose: bool = True
     answers = inputs if inputs is not None else NOTEBOOK_INPUTS.get(name, [])
 
     _epoch_cap_log.clear()
+    _gradio_runs.clear()
+    _gradio_blocked.clear()
     _install_input(answers)
     _install_google_auth()
     _install_gspread()
     _install_headless_matplotlib()
+    _install_gradio()
 
     limit = MAX_EPOCHS.get(name)
     if limit is not None or _epoch_limit[0] is not None:
