@@ -328,6 +328,8 @@ def main() -> int:
     ap = argparse.ArgumentParser()
     ap.add_argument("--chapters", nargs="+", type=int, default=[1, 2, 3, 4, 5],
                     help="점검할 장 번호 (기본: 1 2 3 4 5)")
+    ap.add_argument("--retry", type=int, default=0, metavar="N",
+                    help="실패한 노트북만 N번까지 다시 돌려 본다 (기본: 0 = 다시 돌리지 않음)")
     args = ap.parse_args()
 
     cases = [c for c in CASES if c["chapter"] in args.chapters]
@@ -341,11 +343,38 @@ def main() -> int:
         results.append(r)
         print(f"   {ICON[r['status']]} {r['detail']}  ({r['seconds']:.1f}초)\n", flush=True)
 
+    # ── 실패한 것만 다시 돌려 본다 ────────────────────────────────────────────
+    # MNIST 내려받기(구글 storage)나 구글시트 접속이 잠깐 흔들려 실패하는 일이 있다.
+    # 그런 실패로 알림 메일이 오면, 사람은 곧 알림 자체를 무시하게 된다.
+    # 그래서 한 번 더 돌려 보고, 그때도 안 되면 그제야 실패로 본다.
+    # 다시 돌려서 통과한 것은 표에 '재시도 후 통과'로 남긴다 — 조용히 넘어가지 않는다.
+    if args.retry:
+        targets = [i for i, r in enumerate(results) if r["status"] == "FAIL"]
+        if targets:
+            print("=" * 78)
+            print(f"실패한 {len(targets)}개를 다시 돌려 본다 (최대 {args.retry}회).\n")
+            for i in targets:
+                case = results[i]["case"]
+                first = results[i]["detail"]
+                for attempt in range(1, args.retry + 1):
+                    print(f"▶ 재시도 {attempt}/{args.retry}  {case['section']:6s} {case['file']}",
+                          flush=True)
+                    again = run_one(case)
+                    print(f"   {ICON[again['status']]} {again['detail']}\n", flush=True)
+                    if again["status"] != "FAIL":
+                        again["detail"] += f" · 재시도 {attempt}회 만에 통과"
+                        again["retried_after"] = first
+                        results[i] = again
+                        break
+            print()
+
     print("=" * 78)
     for r in results:
         c = r["case"]
         print(f"{ICON[r['status']]} {c['section']:6s} {c['file']}")
         print(f"     {r['detail']}  ({r['seconds']:.1f}초)")
+        if r.get("retried_after"):
+            print(f"     ⚠ 첫 실행에서는 실패했다: {r['retried_after']}")
         if r.get("epochs_capped"):
             for asked, capped in r["epochs_capped"]:
                 print(f"     에포크 {asked} → {capped} 로 낮춰 실행")
@@ -382,6 +411,13 @@ def main() -> int:
                 f.write(f"| {ICON[r['status']]} | {c['section']} | `{c['file']}` | "
                         f"{detail} | {r['seconds']:.0f}초 |\n")
             f.write(f"\n**정상 {ok} · 측정 {meas} · 실패 {fail} · 합계 {total_time/60:.1f}분**\n")
+            retried = [r for r in results if r.get("retried_after")]
+            if retried:
+                f.write(f"\n⚠ {len(retried)}개는 첫 실행에서 실패했다가 다시 돌려 통과했다. "
+                        "대개 네트워크가 잠깐 흔들린 것이지만, **다음 달에도 같은 노트북이 "
+                        "여기에 뜨면 진짜 문제**다.\n")
+                for r in retried:
+                    f.write(f"- `{r['case']['file']}` — 첫 실행: {r['retried_after']}\n")
             if meas:
                 f.write("\n📏 는 값을 재기만 한 것이다. 이 값을 보고 임계값을 정한 뒤 "
                         "`run_chapters.py`의 mode를 floor로 바꾼다.\n")
