@@ -191,17 +191,29 @@ CASES = [
          expect_text=["amazing", "waiting", "was"],
          note="지침서가 의심 후보로 지목한 keras Tokenizer·pad_sequences 를 쓴다. "
               "임베딩 값 자체는 씨앗이 없어 매번 다르므로, 단어 목록만 확인한다"),
-    dict(chapter=6, section="VI-9", file="NLP_Transformers-pipeline.ipynb",
-         cells=[0, 1],
-         marker="[대역] 화면을 띄우는 대신", mode="complete",
-         note="셀 3개가 서로 독립된 프로그램이다(각자 import·모델·Interface를 갖는다). "
-              "**셀 2는 NLLB-200-600M(약 2.4GB)이라 레인 B 제외 대상**이므로 0·1만 돌린다. "
-              "셀 0 질의응답(xlm-roberta) · 셀 1 요약(KoBART). 셀 2는 레인 C에서 확인할 것"),
+    # ⛔ VI-9 `NLP_Transformers-pipeline.ipynb` — **등록 보류 (2026-08-18)**
+    #
+    # transformers v5가 pipeline("question-answering")·("summarization")·("translation")을
+    # **제거했다.** 이관 안내서에 명시되어 있고, 실행 결과 KeyError 로 확인했다.
+    #   KeyError: "Unknown task question-answering, available tasks are [...]"
+    # 이 노트북은 셀 0(질의응답)·1(요약)·2(번역)이 모두 그 셋에 걸린다. **통째로 고장이다.**
+    #
+    # 등록해 두면 월간 점검이 매달 빨간불이고, 그러면 사람은 알림을 무시하게 된다.
+    # 4-2 임계값을 포기한 것과 같은 이유로 **고치기 전까지 목록에서 뺀다.**
+    # 노트북을 고친 뒤 아래 주석을 풀면 된다.
+    #
+    # dict(chapter=6, section="VI-9", file="NLP_Transformers-pipeline.ipynb",
+    #      cells=[0, 1],
+    #      marker="[대역] 화면을 띄우는 대신", mode="complete",
+    #      note="셀 2는 NLLB-200-600M(약 2.4GB)이라 레인 B 제외 대상이므로 0·1만 돌린다"),
+
     dict(chapter=6, section="VI-10", file="NLP_BERT_pipeline.ipynb",
          marker="[대역] 화면을 띄우는 대신", mode="complete",
          note="셀 3개 모두 작은 모델이라 통째로 돌린다 — bert-base-uncased(마스크 채우기) · "
               "jhgan/ko-sbert-nli(문장 유사도) · distilbert-sst2(감정 분석). "
-              "sentence-transformers 설치가 필요하다"),
+              "sentence-transformers 설치가 필요하다. "
+              "출력 길이 실측 247·16·22자 — **상한은 걸지 않는다.** 이 셀들에는 길이를 정하는 "
+              "인자 자체가 없어서, VI-11 같은 '인자가 조용히 무시되는' 고장이 일어날 수 없다"),
     dict(chapter=6, section="VI-11", file="NLP_GPT_pipeline.ipynb",
          marker="[대역] 화면을 띄우는 대신", mode="complete",
          gradio_max_chars=300,
