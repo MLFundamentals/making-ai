@@ -89,6 +89,7 @@ jobs:
         if: steps.heavy.outputs.need == 'true'
         run: |
           pip install transformers sentencepiece accelerate gradio \
+                      sentence-transformers \
                       torch --extra-index-url https://download.pytorch.org/whl/cpu
 
       - name: 설치된 버전 기록
