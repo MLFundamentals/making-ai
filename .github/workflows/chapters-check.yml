@@ -2,7 +2,7 @@ name: 노트북 수동 점검
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 수동 실행 전용. 예약 실행이 없고, Actions 탭에서 버튼을 눌러야만 돈다.
-# chapter3-check.yml 을 III·IV·V장까지 넓힌 것이다. (옛 파일은 지워도 된다)
+# 지금 등록된 것: 파이썬 기초 8개(I·II장) + III·IV·V장 15개 = 23개
 #
 # 쓰임새는 둘이다.
 #   1) 새 장을 점검 체계에 넣기 전에 한 번 돌려 보기
@@ -15,9 +15,9 @@ on:
   workflow_dispatch:
     inputs:
       chapters:
-        description: "점검할 장 (공백으로 구분). 예: 3 4 5 / 4 5 / 4"
+        description: "점검할 장 (공백으로 구분). 예: 1 2 3 4 5 / 1 2 / 4 5"
         required: false
-        default: "3 4 5"
+        default: "1 2 3 4 5"
       run_probe:
         description: "구글시트 형식 확인을 함께 실행 (III장을 볼 때만 의미 있다)"
         type: boolean
@@ -29,7 +29,7 @@ permissions:
 
 jobs:
   check:
-    name: III·IV·V장 노트북
+    name: 노트북 대역 실행
     runs-on: ubuntu-latest
     # MNIST CNN이 러너(2코어)에서 오래 걸린다. 넉넉히 잡아 둔다.
     timeout-minutes: 60
@@ -54,10 +54,11 @@ jobs:
       # tensorflow 대신 tensorflow-cpu 를 쓴다. 러너에는 GPU가 없고,
       # 내려받는 용량이 절반 이하라 설치가 훨씬 빠르다. 코드에서 보이는 모습은 같다.
       # ipython 은 강화학습 노트북의 from IPython.display import HTML 때문에 필요하다.
+      # matplotlib 은 seaborn 을 깔면 딸려 오지만, I-5-4가 직접 쓰므로 명시해 둔다.
       - name: 실습용 라이브러리 설치
         run: |
           python -m pip install --upgrade pip
-          pip install numpy pandas scikit-learn seaborn \
+          pip install numpy pandas matplotlib scikit-learn seaborn \
                       tensorflow-cpu gymnasium ipython
 
       - name: 설치된 버전 기록
@@ -69,7 +70,7 @@ jobs:
             python - <<'PY'
           import sys
           print("python", sys.version.split()[0])
-          for m in ["numpy", "pandas", "sklearn", "tensorflow", "keras", "gymnasium", "seaborn"]:
+          for m in ["numpy", "pandas", "matplotlib", "sklearn", "tensorflow", "keras", "gymnasium", "seaborn"]:
               try:
                   mod = __import__(m)
                   print(m, getattr(mod, "__version__", "?"))
@@ -80,7 +81,7 @@ jobs:
           } >> "$GITHUB_STEP_SUMMARY"
 
       - name: 노트북 실행
-        run: python tests/run_chapters.py --chapters ${{ github.event.inputs.chapters || '3 4 5' }}
+        run: python tests/run_chapters.py --chapters ${{ github.event.inputs.chapters || '1 2 3 4 5' }}
 
       - name: 실패 시 읽을 것
         if: failure()
