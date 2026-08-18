@@ -1,15 +1,19 @@
 """
-tests/run_chapters.py — III·IV·V장 노트북을 대역으로 실행해 본다
+tests/run_chapters.py — 노트북을 대역으로 실행해 본다 (I·II·III·IV·V장)
 ================================================================
 
-run_chapter3.py를 III장 밖으로 넓힌 것이다. 하는 일은 같다.
+하는 일은 셋뿐이다.
 
   1. 저장소의 노트북 파일을 **읽기만** 한다 (수정·저장 없음)
   2. prelude.install()로 대역을 세운다
   3. 코드를 실행하고, 책에 인쇄된 값과 대조한다
 
-    python tests/run_chapters.py                # III·IV·V장 전부
+    python tests/run_chapters.py                # 등록된 장 전부
+    python tests/run_chapters.py --chapters 1 2 # 파이썬 기초만
     python tests/run_chapters.py --chapters 4 5 # IV·V장만
+
+장 번호는 **책의 장**을 따른다. 파이썬 기초 7개는 I-4·I-5절이라 1장,
+Array_Dimension은 II-3절이라 2장이다. 폴더 이름(python-basics)이 아니다.
 
 필요한 것: numpy, pandas, scikit-learn, tensorflow(또는 tensorflow-cpu),
            gymnasium, seaborn, ipython  (워크플로가 설치한다)
@@ -30,6 +34,7 @@ import json
 import os
 import re
 import sys
+import tempfile
 import time
 import traceback
 
@@ -50,9 +55,50 @@ SUCCESS_RATE = (re.compile(r"성공률[:：]\s*([0-9.]+)\s*%"), 100.0)          
 # ---------------------------------------------------------------------------
 # 점검 대상
 #
-# printed = 책 또는 저장 출력의 값. 비교용이며 판정에 쓰이지 않는다.
+# printed     = 책 또는 저장 출력의 값. 비교용이며 판정에 쓰이지 않는다.
+# marker      = 이 문구가 화면에 나와야 완주로 본다. None이면 문구를 보지 않는다.
+# expect_text = marker 말고 **추가로** 확인할 문구들 (선택).
+#               파이썬 기초처럼 셀마다 예시가 따로 노는 노트북에서 쓴다.
+#               맨 끝 문구 하나만 보면 중간 셀이 조용히 달라져도 초록불이 켜지기 때문이다.
+#               ⚠ 라이브러리 판형에 따라 흔들리는 문구는 넣지 말 것
+#                  (numpy 배열 출력의 칸 맞춤 등). 무해한 차이로 빨간불이 뜬다.
 # ---------------------------------------------------------------------------
 CASES = [
+    # ── I장 · 파이썬 기초 ────────────────────────────────────────────────────
+    # 외부 자산도 무거운 모델도 없다. 전부 몇 초 안에 끝난다.
+    dict(chapter=1, section="I-4-2", file="python-basics/01_Variables_Expressions_Outputs_Inputs.ipynb",
+         marker="MAP ≈", mode="complete",
+         expect_text=["Your BMI is 22.86"],
+         note="input() 2번. 대역이 '175'·'70'을 넣는다 → BMI 22.86 이 나와야 대역이 제대로 흐른 것"),
+    dict(chapter=1, section="I-4-3", file="python-basics/02_Basic Data Types.ipynb",
+         marker="고혈압 대상자: ['Lee']", mode="complete",
+         note="난수·외부 자산 없음. 완전히 결정적"),
+    dict(chapter=1, section="I-4-4", file="python-basics/03_If Statement_Loop.ipynb",
+         marker="첫번째 발견:", mode="complete",
+         expect_text=["Lee → 고혈압 + 40세 이상"],
+         note="맨 끝 셀이 range(3) 출력이라 완주 문구로 쓸 수 없다 → 그 앞 셀을 기준으로 삼았다"),
+    dict(chapter=1, section="I-4-5", file="python-basics/04_Function.ipynb",
+         marker="Help on function get_pass_scores", mode="complete",
+         expect_text=["합격자 점수: [72, 88, 91, 79]"],
+         note="맨 끝이 help(). 도움말 출력이 화면으로 나오는지까지 확인한다"),
+    dict(chapter=1, section="I-5-2", file="python-basics/05_Numpy.ipynb",
+         marker="과체중 BMI:", mode="complete",
+         expect_text=["평균 나이: 38.75"],
+         note="배열 자체의 출력 모양은 확인하지 않는다 — numpy 판형에 따라 칸 맞춤이 달라진다"),
+    dict(chapter=1, section="I-5-3", file="python-basics/06_Pandas.ipynb",
+         marker="나이 표준편차:", mode="complete",
+         expect_text=["최대 혈압: 140"],
+         note="checkup.csv 를 만든다 → 실행기가 임시 폴더에서 돌리므로 저장소는 더러워지지 않는다"),
+    dict(chapter=1, section="I-5-4", file="python-basics/07_Matplotlib.ipynb",
+         marker=None, expect_var="df", mode="complete",
+         note="print가 하나도 없고 그림만 그린다 → V-1과 같은 방식으로 변수 df 로 완주를 확인"),
+
+    # ── II장 ─────────────────────────────────────────────────────────────────
+    dict(chapter=2, section="II-3", file="python-basics/Array_Dimension.ipynb",
+         marker="차원 수: 4", mode="complete",
+         expect_text=["==== 3차원: 텐서 ===="],
+         note="단일 셀. 0~4차원을 차례로 찍는다"),
+
     # ── III장 ────────────────────────────────────────────────────────────────
     dict(chapter=3, section="III-3", file="Multiple Linear Regression_Hypertension_3paras.ipynb",
          marker="%입니다.", mode="complete",
@@ -105,6 +151,21 @@ CASES = [
 ]
 
 
+# contextlib.chdir 은 Python 3.11부터 있다. 워크플로는 3.12를 쓰지만,
+# 저자가 손에 있는 오래된 파이썬으로 돌려볼 수도 있으므로 대체품을 둔다.
+if hasattr(contextlib, "chdir"):
+    _chdir = contextlib.chdir
+else:                                                   # pragma: no cover
+    @contextlib.contextmanager
+    def _chdir(path):
+        before = os.getcwd()
+        os.chdir(path)
+        try:
+            yield
+        finally:
+            os.chdir(before)
+
+
 def load_source(filename: str) -> str:
     """노트북의 코드 셀을 순서대로 이어 붙인다 (파일은 건드리지 않는다)."""
     with open(os.path.join(NOTEBOOKS, filename), encoding="utf-8") as f:
@@ -132,7 +193,12 @@ def run_one(case: dict) -> dict:
     try:
         prelude.install(name, verbose=False)
         namespace = {"__name__": "__main__"}
-        with contextlib.redirect_stdout(buf):
+        # 노트북을 빈 임시 폴더에서 돌린다. Colab의 /content 자리에 해당한다.
+        # I-5-3(Pandas)이 checkup.csv 를 만들기 때문에, 저장소 안에서 돌리면
+        # 점검을 한 번 할 때마다 없던 파일이 하나씩 생긴다.
+        # 폴더는 실행이 끝나면 통째로 사라진다.
+        with tempfile.TemporaryDirectory() as scratch, _chdir(scratch), \
+                contextlib.redirect_stdout(buf):
             exec(compile(src, name, "exec"), namespace)
     except prelude.PreludeError as exc:
         out["seconds"] = time.time() - started
@@ -173,6 +239,13 @@ def run_one(case: dict) -> dict:
         out["detail"] = f"완주 문구를 찾지 못했다: {case['marker']!r}"
         out["tail"] = text[-800:]
         return out
+
+    # 중간 셀의 결과도 확인한다 (선택). 셀마다 예시가 따로 노는 노트북용.
+    for wanted in case.get("expect_text") or []:
+        if wanted not in text:
+            out["detail"] = f"확인 문구를 찾지 못했다: {wanted!r}"
+            out["tail"] = text[-800:]
+            return out
 
     mode = case["mode"]
     if mode == "complete":
@@ -217,8 +290,8 @@ ICON = {"OK": "✅", "MEASURE": "📏", "WARN": "⚠️", "FAIL": "❌"}
 
 def main() -> int:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--chapters", nargs="+", type=int, default=[3, 4, 5],
-                    help="점검할 장 번호 (기본: 3 4 5)")
+    ap.add_argument("--chapters", nargs="+", type=int, default=[1, 2, 3, 4, 5],
+                    help="점검할 장 번호 (기본: 1 2 3 4 5)")
     args = ap.parse_args()
 
     cases = [c for c in CASES if c["chapter"] in args.chapters]

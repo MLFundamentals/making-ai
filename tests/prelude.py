@@ -54,6 +54,10 @@ NOTEBOOK_INPUTS: dict[str, list[str]] = {
     # III-3 은 input() 없음 (78행에 테스트값이 하드코딩되어 있다)
     "Multiple Linear Regression_Hypertension_3paras.ipynb": [],
 
+    # I-4-2 · 키(cm), 몸무게(kg) → BMI 22.86
+    #   반복문이 없어 정확히 2번만 물어본다. 종료어가 필요 없다.
+    "01_Variables_Expressions_Outputs_Inputs.ipynb": ["175", "70"],
+
     # IV-1 · while True 반복. 마지막은 반드시 종료어('q')여야 한다.
     "Perceptron_AND.ipynb": ["1 0", "q"],
     # IV-6 · while True 반복. 마지막은 반드시 종료어('exit')여야 한다.
