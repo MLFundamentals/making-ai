@@ -51,6 +51,7 @@ import prelude  # noqa: E402
 ACC_FRACTION = (re.compile(r"정확도[:：]\s*([0-9]*\.?[0-9]+)\s*$"), 1.0)      # 0.9867
 ACC_PERCENT = (re.compile(r"정확도[:：]\s*([0-9.]+)\s*%"), 100.0)             # 97.47 %
 SUCCESS_RATE = (re.compile(r"성공률[:：]\s*([0-9.]+)\s*%"), 100.0)            # 76.90%
+APPLE_PRICE = (re.compile(r"사과 10개일 때 예상 가격[:：]\s*([0-9.]+)"), 1.0)  # 9.9798
 
 # ---------------------------------------------------------------------------
 # 점검 대상
@@ -100,6 +101,12 @@ CASES = [
          note="단일 셀. 0~4차원을 차례로 찍는다"),
 
     # ── III장 ────────────────────────────────────────────────────────────────
+    dict(chapter=3, section="III-2", file="Linear Regression_Apple Price.ipynb",
+         marker="사과 10개일 때 예상 가격", mode="floor",
+         metric=APPLE_PRICE, floor=9.5, printed=9.9798,
+         expect_text=["Epoch 2000:"],
+         note="시작점이 난수지만 2000번이면 늘 10 근처로 모인다(300회 실측 9.9684~9.9985). "
+              "하한 9.5는 값의 흔들림이 아니라 학습이 발산해 버린 경우를 잡기 위한 것이다"),
     dict(chapter=3, section="III-3", file="Multiple Linear Regression_Hypertension_3paras.ipynb",
          marker="%입니다.", mode="complete",
          note="가중치 초기화가 난수라 값이 흔들린다"),
@@ -112,6 +119,26 @@ CASES = [
     dict(chapter=3, section="III-6", file="Multiclass Classification_Iris.ipynb",
          marker="모델 정확도", mode="floor", metric=ACC_FRACTION, floor=0.95, printed=0.9867,
          note="외부 데이터를 쓰지 않는다"),
+    dict(chapter=3, section="III-7", file="MNIST_Sample Image Viewer_1.ipynb",
+         marker=None, expect_var="sample_img", mode="complete",
+         note="그림만 그리고 print가 없다 → 변수 sample_img 로 완주를 확인"),
+    dict(chapter=3, section="III-7", file="MNIST_Sample Image Viewer_2.ipynb",
+         marker=None, expect_var="sample_img", mode="complete",
+         note="위와 같다. 격자를 덧그리는 판형"),
+    dict(chapter=3, section="III-7", file="MNIST_Sample Image Viewer_3.ipynb",
+         marker=None, expect_var="sample_img", mode="complete",
+         note="위와 같다. seaborn 히트맵을 쓰는 유일한 III장 노트북"),
+    dict(chapter=3, section="III-8", file="MNIST_Multiclass Logistic Regression.ipynb",
+         marker="모델이 예측한 레이블", mode="floor",
+         metric=ACC_PERCENT, floor=0.90, printed=0.9239,
+         note="printed는 **책 인쇄값**이다. 이 노트북에는 저장 출력이 남아 있지 않다(아래 참조)"),
+    dict(chapter=3, section="III-10", file="Evaluation Metrics.ipynb",
+         marker="[ 가장 많이 혼동한 조합 5개 ]", mode="floor",
+         metric=ACC_PERCENT, floor=0.90, printed=0.9268,
+         expect_text=["정확도 : 0.95", "정밀도 : 0.00", "재현율 : 0.00",
+                      "정확도 : 0.93", "정밀도 : 0.40", "재현율 : 0.80", "F1 점수: 0.53"],
+         note="예제 1(모델 A·B)은 난수가 전혀 없어 책 인쇄값과 한 자리까지 같아야 한다 → expect_text로 못박았다. "
+              "'혼동 조합 5개'는 4·5위가 동률이라 실행마다 순서가 바뀌므로 문구만 확인하고 값은 보지 않는다"),
 
     # ── IV장 ─────────────────────────────────────────────────────────────────
     dict(chapter=4, section="IV-1", file="Perceptron_AND.ipynb",
@@ -187,6 +214,14 @@ def run_one(case: dict) -> dict:
     # 노트북마다 깨끗한 상태에서 시작한다 (google/gspread 대역이 겹치지 않도록)
     for mod in [m for m in list(sys.modules) if m.startswith(("google.colab", "gspread"))]:
         del sys.modules[mod]
+
+    # 앞 노트북이 열어 둔 그림을 닫는다. plt.show()는 화면 없는 서버에서 그림을 닫지
+    # 않기 때문에, 그냥 두면 20장을 넘긴 순간부터 무해한 경고가 로그를 채운다.
+    try:
+        import matplotlib.pyplot as _plt
+        _plt.close("all")
+    except ImportError:
+        pass
 
     buf = io.StringIO()
     started = time.time()
