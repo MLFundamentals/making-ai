@@ -24,6 +24,7 @@ from __future__ import annotations
 
 import builtins
 import csv
+import importlib.machinery
 import io
 import os
 import sys
@@ -140,6 +141,26 @@ class _FakeCredentials:
         return None
 
 
+def _fake_module(name: str, is_package: bool = False) -> types.ModuleType:
+    """가짜 모듈을 만든다. **`__spec__`을 반드시 채운다.**
+
+    파이썬 모듈에는 '이 모듈을 어디서 어떻게 불러왔는지' 적힌 명세(`__spec__`)가 붙어 있다.
+    `types.ModuleType()`으로 손수 만든 모듈은 이 칸이 비어 있는데(`None`),
+    평소에는 아무도 들여다보지 않으므로 문제가 드러나지 않는다.
+
+    그런데 `importlib.util.find_spec()`으로 '이 라이브러리가 깔려 있나?'를 확인하는
+    코드가 이 칸을 읽는다. 비어 있으면 "없다"가 아니라 **ValueError로 터진다.**
+    transformers가 정확히 이 방식으로 google.colab을 확인하기 때문에,
+    명세를 채우지 않으면 `import transformers` 한 줄에서 VI장 전체가 죽는다.
+    """
+    mod = types.ModuleType(name)
+    mod.__spec__ = importlib.machinery.ModuleSpec(name, loader=None, is_package=is_package)
+    if is_package:
+        mod.__path__ = []
+        mod.__spec__.submodule_search_locations = []
+    return mod
+
+
 def _install_google_auth() -> None:
     # ⚠ 여기가 함정이다.
     # 'google'은 여러 패키지가 나눠 쓰는 네임스페이스다. google.protobuf(TensorFlow가
@@ -150,15 +171,13 @@ def _install_google_auth() -> None:
     try:
         import google                            # 진짜 네임스페이스를 그대로 쓴다
     except ImportError:
-        google = types.ModuleType("google")
-        google.__path__ = []                     # 아무것도 없을 때만 빈 껍데기
+        google = _fake_module("google", is_package=True)
         sys.modules["google"] = google
 
     # --- google.colab.auth ---------------------------------------------------
     # google.colab은 Colab 밖에 존재하지 않으므로 항상 가짜를 넣는다.
-    colab = types.ModuleType("google.colab")
-    colab.__path__ = []
-    auth = types.ModuleType("google.colab.auth")
+    colab = _fake_module("google.colab", is_package=True)
+    auth = _fake_module("google.colab.auth")
     auth.authenticate_user = lambda *a, **k: None
     colab.auth = auth
     google.colab = colab
@@ -171,8 +190,7 @@ def _install_google_auth() -> None:
         import google.auth as real_auth          # noqa: F401
         real_auth.default = lambda *a, **k: (_FakeCredentials(), "prelude-project")
     except Exception:
-        ga = types.ModuleType("google.auth")
-        ga.__path__ = []
+        ga = _fake_module("google.auth", is_package=True)
         ga.default = lambda *a, **k: (_FakeCredentials(), "prelude-project")
         google.auth = ga
         sys.modules["google.auth"] = ga
@@ -296,7 +314,7 @@ def _install_gspread() -> None:
         import gspread                            # 진짜가 깔려 있으면 authorize만 갈아끼운다
         gspread.authorize = lambda creds=None, *a, **k: _StubClient()
     except Exception:
-        mod = types.ModuleType("gspread")
+        mod = _fake_module("gspread")
         mod.authorize = lambda creds=None, *a, **k: _StubClient()
         mod.Client = _StubClient
         mod.Spreadsheet = _StubSpreadsheet
