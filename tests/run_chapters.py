@@ -130,8 +130,9 @@ CASES = [
          note="위와 같다. seaborn 히트맵을 쓰는 유일한 III장 노트북"),
     dict(chapter=3, section="III-8", file="MNIST_Multiclass Logistic Regression.ipynb",
          marker="모델이 예측한 레이블", mode="floor",
-         metric=ACC_PERCENT, floor=0.90, printed=0.9239,
-         note="printed는 **책 인쇄값**이다. 이 노트북에는 저장 출력이 남아 있지 않다(아래 참조)"),
+         metric=ACC_PERCENT, floor=0.90, printed=0.9272,
+         note="printed는 **저장 출력**이다(2026-08-18 재실행). 책 인쇄값은 92.39%. "
+              "씨앗이 없어 실행마다 0.3%p 안팎으로 흔들린다 — 원고는 그대로 둔다"),
     dict(chapter=3, section="III-10", file="Evaluation Metrics.ipynb",
          marker="[ 가장 많이 혼동한 조합 5개 ]", mode="floor",
          metric=ACC_PERCENT, floor=0.90, printed=0.9268,
