@@ -176,6 +176,25 @@ CASES = [
     dict(chapter=5, section="V-4", file="Reinforcement Learning_Level 4-2.ipynb",
          marker="성공률", mode="measure", metric=SUCCESS_RATE, printed=0.5981,
          note="실측 9.8~65.2%. 학습이 통째로 실패하는 실행이 있어 값으로 판정하지 않는다"),
+
+    # ── VI장 ─────────────────────────────────────────────────────────────────
+    # 착수 순서: 모델 없는 것 → 의심 API → Gradio + 실제 모델.
+    # 한 번에 다 넣지 않는다. 문제가 생겼을 때 원인이 어디인지 바로 보이게 하기 위해서다.
+    dict(chapter=6, section="VI-1", file="NLP_Preprocessing.ipynb",
+         marker="④ 인덱스 시퀀스로 변환된 문장:", mode="complete",
+         expect_text=["['나는', '머신러닝을', '정말', '좋아한다']",
+                      "'파이썬으로': 9", "[9, 3, 8, 10]"],
+         note="순수 파이썬(re 모듈만). 난수도 모델도 없어 **완전히 결정적**이다 — "
+              "책 인쇄값과 한 자리까지 같아야 하므로 결과를 못박았다"),
+    dict(chapter=6, section="VI-3", file="NLP_Word Embedding.ipynb",
+         marker="✅ 학습된 워드 임베딩", mode="complete",
+         expect_text=["amazing", "waiting", "was"],
+         note="지침서가 의심 후보로 지목한 keras Tokenizer·pad_sequences 를 쓴다. "
+              "임베딩 값 자체는 씨앗이 없어 매번 다르므로, 단어 목록만 확인한다"),
+    dict(chapter=6, section="VI-11", file="NLP_GPT_pipeline.ipynb",
+         marker="[대역] 화면을 띄우는 대신", mode="complete",
+         note="Gradio 대역의 첫 실전 시험. KoGPT2를 실제로 내려받아 문장을 생성한다. "
+              "생성 결과는 매번 다르므로 '대역이 fn을 실제로 불렀는가'만 본다"),
 ]
 
 
