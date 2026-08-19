@@ -34,3 +34,6 @@ file-video-cosmoswag,drive_file,[cosmoswag_kr] Sample Video_30s.mp4,실습데이
 file-video-sora-woman,drive_file,[Sora] smiling woman.mp4,실습데이터/[Sora] smiling woman.mp4,manual,medium,VIII-2,,VQA 체험
 file-image-dalle-giftbox,drive_file,[DALL·E] gift box.png,실습데이터/[DALL·E] gift box.png,manual,medium,VIII-2,,VQA 체험
 file-audio-crowd-cheers,drive_file,[Pixabay] crowd-cheers.mp3,실습데이터/[Pixabay] crowd-cheers.mp3,manual,medium,VIII-2,,VQA 체험
+pypi-transformers-5-15-0,pypi,고정 판번호 transformers 5.15.0,https://pypi.org/pypi/transformers/5.15.0/json,http,critical,VI-9,,노트북이 이 판번호로 못박혀 있다. 사라지면 독자는 첫 줄에서 막힌다
+pypi-gradio-6-24-0,pypi,고정 판번호 gradio 6.24.0,https://pypi.org/pypi/gradio/6.24.0/json,http,critical,VI-9,,위와 같음
+pypi-sentencepiece-0-2-2,pypi,고정 판번호 sentencepiece 0.2.2,https://pypi.org/pypi/sentencepiece/0.2.2/json,http,critical,VI-9,,위와 같음

@@ -191,21 +191,20 @@ CASES = [
          expect_text=["amazing", "waiting", "was"],
          note="지침서가 의심 후보로 지목한 keras Tokenizer·pad_sequences 를 쓴다. "
               "임베딩 값 자체는 씨앗이 없어 매번 다르므로, 단어 목록만 확인한다"),
-    # ⛔ VI-9 `NLP_Transformers-pipeline.ipynb` — **등록 보류 (2026-08-18)**
-    #
+    # VI-9 — 2026-08-18 복구 완료.
     # transformers v5가 pipeline("question-answering")·("summarization")·("translation")을
-    # **제거했다.** 이관 안내서에 명시되어 있고, 실행 결과 KeyError 로 확인했다.
-    #   KeyError: "Unknown task question-answering, available tasks are [...]"
-    # 이 노트북은 셀 0(질의응답)·1(요약)·2(번역)이 모두 그 셋에 걸린다. **통째로 고장이다.**
-    #
-    # 등록해 두면 월간 점검이 매달 빨간불이고, 그러면 사람은 알림을 무시하게 된다.
-    # 4-2 임계값을 포기한 것과 같은 이유로 **고치기 전까지 목록에서 뺀다.**
-    # 노트북을 고친 뒤 아래 주석을 풀면 된다.
-    #
-    # dict(chapter=6, section="VI-9", file="NLP_Transformers-pipeline.ipynb",
-    #      cells=[0, 1],
-    #      marker="[대역] 화면을 띄우는 대신", mode="complete",
-    #      note="셀 2는 NLLB-200-600M(약 2.4GB)이라 레인 B 제외 대상이므로 0·1만 돌린다"),
+    # 제거해 통째로 고장났던 노트북이다. 세 셀 모두 모델을 직접 부르는 방식으로 고쳤고,
+    # 파일 이름도 NLP_Transformers-pipeline.ipynb → NLP_Transformers.ipynb 로 바뀌었다
+    # (더 이상 pipeline 을 쓰지 않으므로).
+    dict(chapter=6, section="VI-9", file="NLP_Transformers.ipynb",
+         cells=[0, 1],
+         marker="[대역] 화면을 띄우는 대신", mode="complete",
+         note="셀 3개가 서로 독립된 프로그램이다(각자 import·모델·Interface를 갖고, "
+              "변수도 qa_/sum_/trans_ 로 나뉘어 있다). "
+              "**셀 2는 NLLB-200-600M(약 2.4GB)이라 레인 B 제외 대상**이므로 0·1만 돌린다. "
+              "셀 0 질의응답(xlm-roberta) · 셀 1 요약(KoBART). 셀 2는 레인 C에서 확인할 것. "
+              "노트북은 판번호를 못박아 두었지만 여기서는 !pip 줄을 지우고 최신판으로 돌린다 — "
+              "**빨간불은 '독자가 지금 못 쓴다'가 아니라 '고정을 풀면 깨진다'는 뜻이다**"),
 
     dict(chapter=6, section="VI-10", file="NLP_BERT_pipeline.ipynb",
          marker="[대역] 화면을 띄우는 대신", mode="complete",
