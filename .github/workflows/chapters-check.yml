@@ -86,6 +86,10 @@ jobs:
       # 러너가 지우므로 여기에 없으면 그 노트북이 import 에서 곧바로 죽는다.
       # bertviz 의 의존성(transformers·torch·IPython·boto3 등)은 전부 하한선만 있고
       # 천장이 없어서, "최신에서 깨지는지 본다"는 이 점검의 방침을 방해하지 않는다.
+      #
+      # ipywidgets 는 VI-8 'NLP_Attention_arrows' 가 쓴다(드롭다운 UI).
+      # 이 노트북에는 !pip 줄이 아예 없다 — Colab 기본 제공에 기대고 있기 때문인데,
+      # 러너에는 기본 제공이 없으므로 여기서 깔아 준다.
       - name: 무거운 라이브러리가 필요한가
         id: heavy
         run: |
@@ -105,7 +109,7 @@ jobs:
         if: steps.heavy.outputs.need == 'true'
         run: |
           pip install transformers sentencepiece accelerate gradio \
-                      sentence-transformers bertviz \
+                      sentence-transformers bertviz ipywidgets \
                       torch --extra-index-url https://download.pytorch.org/whl/cpu
 
       # VI장 이후를 돌 때는 무거운 라이브러리의 판번호도 함께 남긴다.
