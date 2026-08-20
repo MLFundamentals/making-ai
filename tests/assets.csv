@@ -37,3 +37,5 @@ file-audio-crowd-cheers,drive_file,[Pixabay] crowd-cheers.mp3,실습데이터/[P
 pypi-transformers-5-15-0,pypi,고정 판번호 transformers 5.15.0,https://pypi.org/pypi/transformers/5.15.0/json,http,critical,VI-9,,노트북이 이 판번호로 못박혀 있다. 사라지면 독자는 첫 줄에서 막힌다
 pypi-gradio-6-24-0,pypi,고정 판번호 gradio 6.24.0,https://pypi.org/pypi/gradio/6.24.0/json,http,critical,VI-9,,위와 같음
 pypi-sentencepiece-0-2-2,pypi,고정 판번호 sentencepiece 0.2.2,https://pypi.org/pypi/sentencepiece/0.2.2/json,http,critical,VI-9,,위와 같음
+pypi-bertviz-1-4-1,pypi,고정 판번호 bertviz 1.4.1,https://pypi.org/pypi/bertviz/1.4.1/json,http,critical,VI-9,,위와 같음. 판이 6개뿐인 저활동 패키지
+pypi-sentence-transformers-5-7-0,pypi,고정 판번호 sentence-transformers 5.7.0,https://pypi.org/pypi/sentence-transformers/5.7.0/json,http,critical,VI-10,,위와 같음. PyPI 최신은 6.0.0이나 Colab 기본은 5.7.0
