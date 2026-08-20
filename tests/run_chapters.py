@@ -187,14 +187,16 @@ CASES = [
          note="순수 파이썬(re 모듈만). 난수도 모델도 없어 **완전히 결정적**이다 — "
               "책 인쇄값과 한 자리까지 같아야 하므로 결과를 못박았다"),
     dict(chapter=6, section="VI-2", file="NLP_Sentence Classification.ipynb",
-         marker="→ 예측:", mode="measure", metric=ACC_FRACTION, printed=0.7784,
+         marker="→ 예측:", mode="floor", metric=ACC_FRACTION, floor=0.70, printed=0.7784,
          expect_text=['▶ 예시 문장: "완전 재미있었어요!"',
                       '▶ 예시 문장: "그저 그랬어요."'],
          note="NSMC 20만건을 내려받아(레인 A 감시 중: data-nsmc-train/test) TF-IDF + "
-              "LogisticRegression. **난수 인자가 보이지 않지만 실측 전에는 하한을 정하지 않는다** "
-              "— sklearn 판번호가 바뀌면 소수점이 흔들릴 수 있다. 두세 달 값을 받아 본 뒤 "
-              "mode 를 floor 로 올릴 것. 예시 문장 두 개는 코드에 박힌 문자열이라 안전하지만 "
-              "예측 결과(긍정/부정·확률)는 확인하지 않는다"),
+              "LogisticRegression. **0.7784 가 세 번 일치했다** — Colab 저장 출력 1회 + "
+              "러너 2회(sklearn 1.9.0), 소수점 네 자리까지 같다. 난수 인자가 없다는 추정이 "
+              "실측으로 확인되어 2026-08-20 measure → floor 로 올렸다. "
+              "하한 0.70 은 값의 흔들림이 아니라 **학습이 통째로 망가진 경우**를 잡기 위한 것이다 "
+              "— 이 노트북의 진짜 위험은 정확도 하락이 아니라 NSMC(개인 저장소)가 사라지는 것이고, "
+              "그건 하한이 아니라 예외로 터진다. 예측 결과(긍정/부정·확률)는 확인하지 않는다"),
 
     dict(chapter=6, section="VI-3", file="NLP_Word Embedding.ipynb",
          marker="✅ 학습된 워드 임베딩", mode="complete",
@@ -251,6 +253,36 @@ CASES = [
               "⚠ '어텐션 모델은 장문을 재현하고 기본 모델은 실패한다'는 이 절의 핵심 주장은 "
               "점검되지 않는다 — 값으로 못박으면 TF 판번호가 오를 때마다 빨간불이 뜬다. 레인 C 몫. "
               "참고: 이 노트북은 스스로 TF 판번호를 찍어 준다(Current TensorFlow version:)"),
+
+    dict(chapter=6, section="VI-10", file="NLP_BERT.ipynb",
+         marker="종료합니다.", mode="complete",
+         expect_text=["모델 준비 완료!", "예측 결과:"],
+         note="mBERT(bert-base-multilingual-cased, 약 700MB)를 특징추출기로만 쓰고 "
+              "[CLS] 벡터를 sklearn LogisticRegression 에 넣는다. "
+              "input() 반복인데 **종료 조건이 종료어가 아니라 빈 문자열**이라 "
+              "prelude 의 마지막 칸이 \"\" 다 — IV-1('q')·IV-6('exit')과 다르니 주의. "
+              "marker '종료합니다.'가 나왔다는 것은 준비된 답 4개가 모두 쓰였다는 뜻이고, "
+              "모자라면 러너의 unused_inputs 검사가 따로 잡는다. "
+              "예측 결과와 확률값은 확인하지 않는다 — torch 판번호에 따라 끝자리가 흔들린다"),
+
+    dict(chapter=6, section="VI-11", file="NLP_BERT_GPT_output.ipynb",
+         marker="🟠 [KoGPT2] 다음 단어 예측 (Top-3):", mode="complete",
+         expect_text=["🔵 [KLUE BERT] 문맥 임베딩 출력:", "##를", "[SEP]"],
+         note="klue/bert-base 와 skt/kogpt2-base-v2 를 함께 내려받는다(합쳐 약 1GB). "
+              "input() 도 난수도 없고 두 모델 다 eval() 이라 결정적이지만, "
+              "**임베딩 평균값과 확률은 확인하지 않는다** — torch 판번호에 따라 끝자리가 달라진다. "
+              "대신 토큰 쪼개기 결과('##를'·'[SEP]')를 못박았다. 토크나이저는 모델에 딸린 "
+              "고정 자산이라 안정적이고, 이것이 바뀌면 원고의 '##' 설명 자체가 틀려진다"),
+
+    # VI장 미등록 3건은 **의도적 제외**이며 아직 등록하지 않은 것이 아니다.
+    #   VI-4 NLP_Transfer Learning_01 — cats_vs_dogs 25,000장 × 모델 2개.
+    #                                   원고가 "Colab GPU로도 약 10분"이라 적고 있다.
+    #   VI-5 NLP_Transfer Learning_02 — GloVe 822MB 내려받기 + 양방향 LSTM 2개.
+    #                                   원고가 "20분 이상"이라 적고 있다.
+    #   VI-9 NLP_Transformer-based translation model — mBART-large-50(약 2.4GB).
+    # 셋 다 러너(GPU 없는 2코어)에서 60분 제한을 넘길 것이 거의 확실하다.
+    # 앞의 둘은 tensorflow_datasets 도 필요한데 워크플로에 없다.
+    # → 레인 C에서 사람이 Colab으로 확인할 것.
 
     # VI-9 — 2026-08-18 복구 완료.
     # transformers v5가 pipeline("question-answering")·("summarization")·("translation")을
