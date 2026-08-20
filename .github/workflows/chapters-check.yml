@@ -172,7 +172,7 @@ jobs:
           if os.getenv("HEAVY") == "true":
               mods += ["torch", "transformers", "sentencepiece", "accelerate",
                        "gradio", "sentence_transformers", "bertviz",
-                       "gtts", "librosa"]
+                       "ipywidgets", "gtts", "librosa"]
           for m in mods:
               print(m, ver(m))
           PY
