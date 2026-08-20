@@ -377,6 +377,26 @@ CASES = [
               "librosa 는 주 판번호가 1.0.0 으로 올라간 최신판에서도 "
               "time_stretch(y, rate=) 시그니처가 그대로다(실측: 44100 → 33923, 비율 1.3). "
               "노트북 고정값 0.11.0 과 Colab 기본값도 0.11.0 이다"),
+
+    dict(chapter=7, section="VII-1", file="Generative AI_Text Generator.ipynb",
+         marker="[대역] 사람이 누르는 대신", mode="complete",
+         note="버튼 대역의 첫 실전 시험. 이 노트북은 끝이 button.on_click(...) + display(...) "
+              "라서, 그냥 돌리면 위젯을 만들어 얹는 시늉만 하고 끝난다 — **생성 로직은 한 번도 "
+              "실행되지 않는다.** 저장 출력에도 위젯 여섯 개만 있고 생성 결과가 없다"
+              "(원고는 결과를 별도 이미지 파일로 싣고 있다). 그대로 등록했다면 KoGPT2 를 "
+              "내려받은 것까지만 확인하고 초록불이 켜졌을 것이다. "
+              "대역이 on_click 등록 시점에 콜백을 한 번 불러 준다. 등록 시점에 generator· "
+              "dropdown·temp·length·output 이 모두 준비돼 있어 안전하다. "
+              "marker 는 대역이 찍는 문구다 — 이 노트북에는 print 가 하나도 없다. "
+              "⚠ 아직 button_max_chars 를 걸지 않았다. max_new_tokens=60 에 한국어라 "
+              "몇 자가 나오는지 재 본 적이 없기 때문이다. 두세 번 재고 나서 건다 "
+              "(VI-11 에서 85자 vs 721자를 재고 300자를 정한 것과 같은 순서). "
+              "⚠ **!pip 줄이 아예 없어 transformers 가 고정돼 있지 않다.** 같은 장의 "
+              "VII-2·VII-3① 은 transformers==5.15.0 으로 못박혀 있는데 이것만 무방비다. "
+              "판번호 고정 정책의 「설치 줄 11개」 목록은 **설치 줄이 없는 노트북을 "
+              "구조적으로 볼 수 없었다** — VI-8 arrows 도 같은 처지다. "
+              "다행히 VI-11 이 같은 pipeline('text-generation') 을 쓰며 매달 도니 "
+              "조기 경보는 있다. 원고·노트북에 설치 줄을 넣을지는 미결"),
 ]
 
 
@@ -504,6 +524,28 @@ def run_one(case: dict) -> dict:
         out["tail"] = buf.getvalue()[-800:]
         return out
     out["gradio_runs"] = prelude.gradio_runs()
+
+    # 버튼 대역도 같은 잣대로 본다.
+    # 버튼을 눌러 보지도 못했거나, 눌렀는데 아무것도 안 나왔다면 그 초록불은
+    # '모델을 불러왔다'까지만 뜻한다. 그건 이 노트북이 보여 주려는 것이 아니다.
+    blocked = prelude.button_blocked()
+    if blocked:
+        out["detail"] = "버튼 대역이 확인에 실패했다: " + " / ".join(blocked)
+        out["tail"] = buf.getvalue()[-800:]
+        return out
+    out["button_clicks"] = prelude.button_clicks()
+
+    # 버튼 출력 길이 상한. gradio_max_chars 와 같은 목적이다
+    # (VI-11: 인자가 조용히 무시되면 길이가 껑충 뛴다).
+    # ⚠ 반드시 실측 후에 정한다. 재 보지 않은 노트북에는 걸지 않는다.
+    ceiling = case.get("button_max_chars")
+    if ceiling:
+        for b in out["button_clicks"]:
+            if b["chars"] > ceiling:
+                out["detail"] = (f"버튼 출력이 {b['chars']}자로 상한 {ceiling}자를 넘었다 "
+                                 f"— 인자가 무시되고 있을 수 있다 ({b['button']})")
+                out["tail"] = buf.getvalue()[-800:]
+                return out
 
     # Gradio 출력 길이 상한.
     # VI-11에서 배운 것이다: max_length 인자가 조용히 무시되자 출력이 83~97자에서
@@ -694,6 +736,8 @@ def main() -> int:
                 # 이 숫자가 껑충 뛰므로, 상한을 정하는 근거이자 조기 신호가 된다.
                 for g in r.get("gradio_runs") or []:
                     detail += f" · Gradio 출력 {g['chars']}자"
+                for b in r.get("button_clicks") or []:
+                    detail += f" · 버튼 '{b['button']}' 출력 {b['chars']}자"
                 if c.get("cells") is not None:
                     detail += f" · **셀 {c['cells']}번만 실행**"
                 f.write(f"| {ICON[r['status']]} | {c['section']} | `{c['file']}` | "

@@ -498,6 +498,126 @@ def gradio_blocked() -> list[str]:
 
 
 # ---------------------------------------------------------------------------
+# ipywidgets 버튼 대역
+# ---------------------------------------------------------------------------
+# Gradio 대역과 목적이 같다. VII-1 'Generative AI_Text Generator' 의 알맹이는
+# `on_click()` 안에 있고, 그 함수는 **사람이 버튼을 눌러야** 실행된다.
+# 그대로 두면 러너는 위젯을 만들어 화면에 얹는 시늉만 하고 끝나, 모델 로딩까지만
+# 확인한 채 초록불이 켜진다. 태그 방식을 버린 것과 똑같은 실패다.
+#
+# 그래서 `Button.on_click` 을 가로채, 콜백을 등록하는 그 자리에서 한 번 불러 준다.
+# **독자가 화면을 열고 버튼을 한 번 누른 것과 같은 일**이다.
+#
+# ⚠ 등록 시점에 부르므로, 콜백이 **나중에 만들어지는 변수**를 참조하는 노트북에서는
+#   NameError 가 난다. VII-1 은 on_click 등록 시점에 generator·dropdown·temp·
+#   length·output 이 모두 준비돼 있어 안전하다. 새 노트북을 붙일 때 이 조건을 볼 것.
+#
+# ⚠ ipywidgets 8.x 의 `Output.__exit__` 는 IPython 커널이 없으면 예외를 삼키지 않는다
+#   (8.1.9 실측). 그래서 `with output:` 안에서 터진 것이 러너까지 올라온다.
+#   **7.x 는 무조건 삼켰다** — 판번호가 내려가면 이 대역이 통째로 무력해진다.
+#   워크플로의 판번호 기록에 ipywidgets 가 들어 있는 이유다.
+_button_clicks: list[dict] = []
+_button_blocked: list[str] = []
+_display_depth: list[int] = [0]          # 클릭이 도는 동안에만 출력을 기록한다
+_display_seen: list[dict] = []
+
+
+def _install_display_probe() -> None:
+    """`display()` 로 넘어온 것의 길이를 잰다 (클릭이 도는 동안만).
+
+    버튼만 눌러서는 '터지지 않았다'까지만 알 수 있다. KoGPT2 가 빈 문자열을
+    돌려줘도 초록불이 된다. VI-11 에서 `max_length` 가 조용히 무시됐을 때와 같은
+    자리다 — 터지지도 값이 어긋나지도 않는 고장.
+
+    Markdown·HTML 객체는 원문을 `.data` 에 들고 있어 길이를 잴 수 있다.
+    노트북이 `from IPython.display import display` 하기 **전에** 갈아끼워야
+    노트북이 이 대역을 가져간다. prelude 는 노트북보다 먼저 도니 조건이 맞는다.
+    클릭 중이 아니면 원본에 그대로 넘기므로 다른 노트북에는 영향이 없다.
+    """
+    try:
+        import IPython.display as ipd
+    except ImportError:
+        return
+
+    if getattr(ipd.display, "_prelude", False):
+        return
+
+    original = ipd.display
+
+    def display(*objs, **kwargs):         # noqa: ANN001
+        if _display_depth[0] > 0:
+            for o in objs:
+                data = getattr(o, "data", None)
+                if isinstance(data, str):
+                    _display_seen.append(dict(kind=type(o).__name__,
+                                              chars=len(data), text=data))
+        return original(*objs, **kwargs)
+
+    display._prelude = True
+    ipd.display = display
+
+
+def _install_button() -> None:
+    try:
+        import ipywidgets as widgets
+    except ImportError:
+        return                                    # 설치되지 않았으면 할 일이 없다
+
+    if getattr(widgets.Button.on_click, "_prelude", False):
+        return                                    # 한 프로세스에서 두 번 걸지 않는다
+
+    original = widgets.Button.on_click
+
+    def on_click(self, callback, remove=False):   # noqa: ANN001
+        original(self, callback, remove=remove)
+        if remove:
+            return                                # 등록 해제는 그냥 넘긴다
+
+        label = getattr(self, "description", None) or "이름 없는 버튼"
+        if not callable(callback):
+            _button_blocked.append(f"'{label}' 에 걸린 것이 함수가 아니다")
+            return
+
+        print(f"\n[대역] 사람이 누르는 대신 '{label}' 을 한 번 누른다")
+
+        before = len(_display_seen)
+        _display_depth[0] += 1
+        try:
+            callback(self)                        # 여기서 터지면 그대로 실패로 잡힌다
+        finally:
+            _display_depth[0] -= 1
+
+        produced = _display_seen[before:]
+        total = sum(d["chars"] for d in produced)
+        _button_clicks.append(dict(button=label,
+                                   callback=getattr(callback, "__name__", "?"),
+                                   chars=total, items=len(produced)))
+        if produced:
+            head = produced[0]["text"].replace("\n", " ")
+            print(f"   출력({total}자): {head[:300]}")
+            if total > 300:
+                print("   ...")
+        else:
+            # 터지지는 않았는데 아무것도 내놓지 않았다. 실패시키지는 않되
+            # run_chapters 가 볼 수 있게 남긴다 — 조용한 성공을 만들지 않기 위해서다.
+            _button_blocked.append(f"'{label}' 을 눌렀으나 display() 로 나온 것이 없다")
+            print("   출력 없음 ⚠")
+
+    on_click._prelude = True
+    widgets.Button.on_click = on_click
+
+
+def button_clicks() -> list[dict]:
+    """대역이 실제로 눌러 본 버튼 목록."""
+    return list(_button_clicks)
+
+
+def button_blocked() -> list[str]:
+    """버튼을 눌렀으나 아무것도 확인하지 못한 사유. 비어 있어야 정상이다."""
+    return list(_button_blocked)
+
+
+# ---------------------------------------------------------------------------
 # 7. 셸 명령(`!wget` 같은 줄) — 노트북에만 있는 문법이라 파이썬이 이해하지 못한다
 #
 # `!pip install` 은 실행기가 아예 지워 버린다(워크플로가 미리 설치하므로).
@@ -531,11 +651,17 @@ def install(notebook: str, inputs: list[str] | None = None, verbose: bool = True
     _epoch_cap_log.clear()
     _gradio_runs.clear()
     _gradio_blocked.clear()
+    _button_clicks.clear()
+    _button_blocked.clear()
+    _display_seen.clear()
+    _display_depth[0] = 0
     _install_input(answers)
     _install_google_auth()
     _install_gspread()
     _install_headless_matplotlib()
     _install_gradio()
+    _install_display_probe()
+    _install_button()
 
     limit = MAX_EPOCHS.get(name)
     if limit is not None or _epoch_limit[0] is not None:
