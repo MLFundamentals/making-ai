@@ -30,7 +30,7 @@ permissions:
 
 jobs:
   check:
-    name: 외부 자산 35건 점검
+    name: 외부 자산 점검
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
