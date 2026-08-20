@@ -28,9 +28,9 @@ on:
   workflow_dispatch:
     inputs:
       chapters:
-        description: "점검할 장 (공백으로 구분). 예: 1 2 3 4 5 6 7 / 1 2 / 7"
+        description: "점검할 장 (공백으로 구분). 예: 1 2 3 4 5 6 7 9 / 1 2 / 9"
         required: false
-        default: "1 2 3 4 5 6 7"
+        default: "1 2 3 4 5 6 7 9"
       # ⚠ 이 default 는 **버튼을 눌렀을 때 칸에 채워지는 값**일 뿐이다.
       #   예약 실행에는 입력값이 아예 없으므로 아래 jobs.check.env.CHAPTERS 의
       #   기본값이 쓰인다. 장 목록을 바꿀 때는 두 곳을 함께 고칠 것.
@@ -62,7 +62,10 @@ jobs:
       # 점검할 장을 정하는 자리는 여기 하나뿐이다.
       # 예약 실행에는 입력값이 없으므로 오른쪽 기본값이 그대로 쓰인다.
       # (위 workflow_dispatch 의 default 는 버튼 칸을 채우는 값일 뿐이다)
-      CHAPTERS: ${{ github.event.inputs.chapters || '1 2 3 4 5 6 7' }}
+      # ⚠ 8이 빠진 것은 실수가 아니다. VIII장은 등록 대상이 0개다
+      #   (노트북 둘 다 의도적 제외 — 사유는 run_chapters.py 의 VIII장 주석 참조).
+      #   목록에 8을 넣으면 "8장도 점검했다"고 읽히지만 실제로는 도는 것이 없다.
+      CHAPTERS: ${{ github.event.inputs.chapters || '1 2 3 4 5 6 7 9' }}
 
     steps:
       - name: 저장소 내려받기
