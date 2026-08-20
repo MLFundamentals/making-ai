@@ -186,11 +186,40 @@ CASES = [
                       "'파이썬으로': 9", "[9, 3, 8, 10]"],
          note="순수 파이썬(re 모듈만). 난수도 모델도 없어 **완전히 결정적**이다 — "
               "책 인쇄값과 한 자리까지 같아야 하므로 결과를 못박았다"),
+    dict(chapter=6, section="VI-2", file="NLP_Sentence Classification.ipynb",
+         marker="→ 예측:", mode="measure", metric=ACC_FRACTION, printed=0.7784,
+         expect_text=['▶ 예시 문장: "완전 재미있었어요!"',
+                      '▶ 예시 문장: "그저 그랬어요."'],
+         note="NSMC 20만건을 내려받아(레인 A 감시 중: data-nsmc-train/test) TF-IDF + "
+              "LogisticRegression. **난수 인자가 보이지 않지만 실측 전에는 하한을 정하지 않는다** "
+              "— sklearn 판번호가 바뀌면 소수점이 흔들릴 수 있다. 두세 달 값을 받아 본 뒤 "
+              "mode 를 floor 로 올릴 것. 예시 문장 두 개는 코드에 박힌 문자열이라 안전하지만 "
+              "예측 결과(긍정/부정·확률)는 확인하지 않는다"),
+
     dict(chapter=6, section="VI-3", file="NLP_Word Embedding.ipynb",
          marker="✅ 학습된 워드 임베딩", mode="complete",
          expect_text=["amazing", "waiting", "was"],
          note="지침서가 의심 후보로 지목한 keras Tokenizer·pad_sequences 를 쓴다. "
               "임베딩 값 자체는 씨앗이 없어 매번 다르므로, 단어 목록만 확인한다"),
+
+    dict(chapter=6, section="VI-6", file="NLP_Language Model_01.ipynb",
+         marker="다음에 나올 확률이 높은 단어: 'processing'", mode="complete",
+         expect_text=["('natural', 'language')"],
+         note="순수 파이썬(re · collections)뿐이다. 모델도 난수도 외부 자산도 없어 "
+              "**완전히 결정적**이므로 책 인쇄값과 한 자리까지 같아야 한다 → 결과를 통째로 못박았다. "
+              "⚠ 다만 'processing'과 'models'는 빈도가 1로 동률이고, Counter.most_common 이 "
+              "먼저 들어온 것을 고르기 때문에 'processing'이 나온다(원고에도 그렇게 적혀 있다). "
+              "파이썬이 이 동작을 바꾸면 여기서 빨간불이 뜬다 — 그때는 노트북이 아니라 "
+              "이 marker 를 손볼 것"),
+    dict(chapter=6, section="VI-7", file="NLP_Encoder-Decoder Model.ipynb",
+         marker="▶ 입력: have a nice day", mode="complete",
+         expect_text=["▶ 입력: nice to meet you", "▶ 입력: thank you"],
+         note="Keras seq2seq 300에포크(문장쌍 10개라 몇 초면 끝난다). 씨앗이 없어 "
+              "**번역 결과는 확인하지 않는다** — 저장 출력의 '반가워'·'고마워'·'좋은 하루 보내'를 "
+              "expect_text 로 못박으면 무해한 차이로 빨간불이 뜬다. 확인하는 것은 "
+              "translate() 세 번이 모두 예외 없이 끝났다는 것뿐이다. "
+              "⚠ 학습이 통째로 실패해 엉뚱한 번역이 나와도 초록불이다 — 번역 품질은 레인 C 몫"),
+
     # VI-9 — 2026-08-18 복구 완료.
     # transformers v5가 pipeline("question-answering")·("summarization")·("translation")을
     # 제거해 통째로 고장났던 노트북이다. 세 셀 모두 모델을 직접 부르는 방식으로 고쳤고,
