@@ -7,7 +7,7 @@ drive-folder-root,drive,상위 폴더,1dXEvlmi16QCpLlKDdsKSlX5uVrRyvy9j,drive,hi
 sheet-hypertension-8paras,gsheet,고혈압 8파라미터 (III-4 사용),1eC4YnMRr5a6v2EmxcZBUb-mGv6k8Qz-8UcNTSoeM2qU,gsheet,critical,III-4,,100행×9열 기대 · 코드에 ID 하드코딩
 sheet-hypertension-3paras,gsheet,고혈압 3파라미터 (III-3 사용),12RmvY2KI-6UcMEHXX4E65R_oso4965jNpgAbKeIgI9c,gsheet,critical,III-3,,10행×4열 기대 · 코드에 ID 하드코딩
 sheet-shopping,gsheet,Shopping Behavior Dataset,1MI-HWfwR5-Dp-A8dJ4DfOVGGau-9QdysfvsQHvZ5VY0,gsheet,critical,III-5,,2000행 기대
-sheet-matches-record,gsheet,Matches_Record,1SyBg64IX_uX290hsIwGH3zZwe_Aeb1SBLx146zSGIro,gsheet,high,IX-3,,본문은 export?format=csv 사용
+sheet-matches-record,gsheet,Matches_Record,1SyBg64IX_uX290hsIwGH3zZwe_Aeb1SBLx146zSGIro,gsheet,critical,IX-3,,본문은 export?format=csv 사용
 data-nsmc-train,dataset,NSMC 학습 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt,http,high,VI-2,,GitHub raw
 data-nsmc-test,dataset,NSMC 평가 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt,http,high,VI-2,,GitHub raw
 data-glove-6b,dataset,GloVe 6B 임베딩,http://nlp.stanford.edu/data/glove.6B.zip,http,high,VI-5,yes,http · 약 822MB · downloads.cs.stanford.edu로 리다이렉트되는 것이 정상
