@@ -10,7 +10,7 @@ sheet-shopping,gsheet,Shopping Behavior Dataset,1MI-HWfwR5-Dp-A8dJ4DfOVGGau-9Qdy
 sheet-matches-record,gsheet,Matches_Record,1SyBg64IX_uX290hsIwGH3zZwe_Aeb1SBLx146zSGIro,gsheet,high,IX-3,,본문은 export?format=csv 사용
 data-nsmc-train,dataset,NSMC 학습 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt,http,high,VI-2,,GitHub raw
 data-nsmc-test,dataset,NSMC 평가 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt,http,high,VI-2,,GitHub raw
-data-glove-6b,dataset,GloVe 6B 임베딩,http://nlp.stanford.edu/data/glove.6B.zip,http,high,VI-3,yes,http · 약 822MB · downloads.cs.stanford.edu로 리다이렉트되는 것이 정상
+data-glove-6b,dataset,GloVe 6B 임베딩,http://nlp.stanford.edu/data/glove.6B.zip,http,high,VI-5,yes,http · 약 822MB · downloads.cs.stanford.edu로 리다이렉트되는 것이 정상
 data-tfds-cats-vs-dogs,dataset,TFDS cats_vs_dogs,https://www.tensorflow.org/datasets/catalog/cats_vs_dogs,http,medium,VI-4,,카탈로그 페이지로 간접 확인
 data-tfds-imdb-reviews,dataset,TFDS imdb_reviews,https://www.tensorflow.org/datasets/catalog/imdb_reviews,http,medium,VI-5,,카탈로그 페이지로 간접 확인
 hf-xlm-roberta-squad2,hf_model,다국어 QA,deepset/xlm-roberta-base-squad2,hf,high,VI-9,,
