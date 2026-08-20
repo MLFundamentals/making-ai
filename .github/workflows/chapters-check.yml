@@ -2,7 +2,9 @@ name: 노트북 점검
 
 # ─────────────────────────────────────────────────────────────────────────────
 # 레인 B — 노트북을 대역으로 실제 실행해 라이브러리 변경을 잡아낸다.
-# 지금 등록된 것: 파이썬 기초 8개(I·II장) + III장 10개 + IV장 5개 + V장 6개 = 29개
+# 등록 목록은 tests/run_chapters.py 의 CASES 가 유일한 출처다.
+# 실행하면 맨 앞줄에 "점검 대상: N개"가 찍힌다. 여기에 숫자를 옮겨 적지 말 것 —
+# 옮겨 적은 숫자는 목록이 늘어나도 따라오지 않아 조용히 거짓말이 된다.
 #
 # 정기 실행은 매달 1일 10:20 KST. 사람이 아무것도 하지 않아도 돈다.
 # 수동 실행은 Actions 탭의 'Run workflow' 버튼 — 쓰임새는 셋이다.
@@ -29,7 +31,11 @@ on:
         description: "점검할 장 (공백으로 구분). 예: 1 2 3 4 5 / 1 2 / 4 5"
         required: false
         default: "1 2 3 4 5"
-      # 예약 실행에는 입력값이 없으므로 아래 기본값(1 2 3 4 5)이 그대로 쓰인다.
+      # ⚠ 이 default 는 **버튼을 눌렀을 때 칸에 채워지는 값**일 뿐이다.
+      #   예약 실행에는 입력값이 아예 없으므로 아래 jobs.check.env.CHAPTERS 의
+      #   기본값이 쓰인다. 장 목록을 바꿀 때는 두 곳을 함께 고칠 것.
+      #   한 곳만 고치면 버튼에는 6장이 보이는데 매달 도는 것은 1~5장인,
+      #   초록불이 뜨는 조용한 어긋남이 된다.
       run_probe:
         description: "구글시트 형식 확인을 함께 실행 (III장을 볼 때만 의미 있다)"
         type: boolean
@@ -45,6 +51,12 @@ jobs:
     runs-on: ubuntu-latest
     # MNIST CNN이 러너(2코어)에서 오래 걸린다. 넉넉히 잡아 둔다.
     timeout-minutes: 60
+
+    env:
+      # 점검할 장을 정하는 자리는 여기 하나뿐이다.
+      # 예약 실행에는 입력값이 없으므로 오른쪽 기본값이 그대로 쓰인다.
+      # (위 workflow_dispatch 의 default 는 버튼 칸을 채우는 값일 뿐이다)
+      CHAPTERS: ${{ github.event.inputs.chapters || '1 2 3 4 5' }}
 
     steps:
       - name: 저장소 내려받기
@@ -68,12 +80,16 @@ jobs:
       # ipython 은 강화학습 노트북의 from IPython.display import HTML 때문에 필요하다.
       # matplotlib 은 seaborn 을 깔면 딸려 오지만, I-5-4가 직접 쓰므로 명시해 둔다.
       # VI장 이후를 점검할 때만 무거운 라이브러리(transformers·torch·gradio)를 깐다.
-      # 지금 등록된 I~V장에는 필요 없고, 설치에만 몇 분이 더 걸리기 때문이다.
+      # I~V장에는 필요 없고, 설치에만 몇 분이 더 걸리기 때문이다.
+      #
+      # bertviz 는 VI-9 'NLP_Transformer with BertViz' 가 쓴다. 노트북의 !pip 줄은
+      # 러너가 지우므로 여기에 없으면 그 노트북이 import 에서 곧바로 죽는다.
+      # bertviz 의 의존성(transformers·torch·IPython·boto3 등)은 전부 하한선만 있고
+      # 천장이 없어서, "최신에서 깨지는지 본다"는 이 점검의 방침을 방해하지 않는다.
       - name: 무거운 라이브러리가 필요한가
         id: heavy
         run: |
-          CH="${{ github.event.inputs.chapters || '1 2 3 4 5' }}"
-          if echo "$CH" | grep -qE '(^| )(6|7|8|9)( |$)'; then
+          if echo "$CHAPTERS" | grep -qE '(^| )(6|7|8|9)( |$)'; then
             echo "need=true" >> "$GITHUB_OUTPUT"
           else
             echo "need=false" >> "$GITHUB_OUTPUT"
@@ -89,24 +105,48 @@ jobs:
         if: steps.heavy.outputs.need == 'true'
         run: |
           pip install transformers sentencepiece accelerate gradio \
-                      sentence-transformers \
+                      sentence-transformers bertviz \
                       torch --extra-index-url https://download.pytorch.org/whl/cpu
 
+      # VI장 이후를 돌 때는 무거운 라이브러리의 판번호도 함께 남긴다.
+      # 노트북에는 판번호가 박혀 있지만 러너는 그 !pip 줄을 지우고 최신판으로 돌린다.
+      # 그래서 VI장 빨간불은 "독자가 지금 못 쓴다"가 아니라 "고정을 풀면 깨진다"는 뜻인데,
+      # 그 뜻을 읽으려면 **어느 판번호에서 깨졌는지**를 알아야 한다.
+      # 매달 쌓이는 이 기록은 개정판 때 고정값을 재조사할 자료가 되기도 한다.
       - name: 설치된 버전 기록
+        env:
+          HEAVY: ${{ steps.heavy.outputs.need }}
         run: |
           {
             echo "## 실행 환경"
             echo ""
             echo '```'
             python - <<'PY'
-          import sys
+          import os, sys
           print("python", sys.version.split()[0])
-          for m in ["numpy", "pandas", "matplotlib", "sklearn", "tensorflow", "keras", "gymnasium", "seaborn"]:
+
+          def ver(name):
               try:
-                  mod = __import__(m)
-                  print(m, getattr(mod, "__version__", "?"))
+                  mod = __import__(name)
               except Exception as e:
-                  print(m, "불러오기 실패:", type(e).__name__)
+                  return "불러오기 실패: " + type(e).__name__
+              v = getattr(mod, "__version__", None)
+              if v:
+                  return v
+              # bertviz 처럼 __version__ 을 두지 않는 패키지가 있다.
+              try:
+                  import importlib.metadata as md
+                  return md.version(name.replace("_", "-"))
+              except Exception:
+                  return "?"
+
+          mods = ["numpy", "pandas", "matplotlib", "sklearn",
+                  "tensorflow", "keras", "gymnasium", "seaborn"]
+          if os.getenv("HEAVY") == "true":
+              mods += ["torch", "transformers", "gradio",
+                       "sentence_transformers", "bertviz"]
+          for m in mods:
+              print(m, ver(m))
           PY
             echo '```'
           } >> "$GITHUB_STEP_SUMMARY"
@@ -118,7 +158,7 @@ jobs:
       - name: 노트북 실행
         run: |
           python tests/run_chapters.py \
-            --chapters ${{ github.event.inputs.chapters || '1 2 3 4 5' }} \
+            --chapters $CHAPTERS \
             --retry 1
 
       - name: 실패 시 읽을 것
