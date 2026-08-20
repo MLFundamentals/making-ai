@@ -333,6 +333,47 @@ CASES = [
               "출력 상한 300자는 실측 근거가 있다 — 정상 83~97자 vs max_length가 무시됐을 때 721자. "
               "길이 범위는 세 세션 연속 넓어졌다(85 → 84~93 → 84~97 → 83~97). "
               "하한은 참고값일 뿐 판정에 쓰지 않는다 — 판정 인자는 gradio_max_chars 하나다"),
+
+    # ── VII장 · 생성형 AI ────────────────────────────────────────────────────
+    # 원고 대조로 확정: 노트북 4개 / 절 3개 (VII-3 에 두 개 — VI-6·VI-8 과 같은 형태).
+    # 그중 등록 대상은 2개다. 나머지 둘은 **아직 안 한 것이 아니라 안 하기로 한 것**이다.
+    #
+    #   VII-2  Generative AI_Diffusion
+    #          노트북 메타데이터에 accelerator: "GPU" · gpuType: "T4" 가 저장돼 있고,
+    #          원고도 "Colab의 T4 GPU를 사용하도록 런타임 설정을 해두었다"고 명시한다.
+    #          러너는 GPU 없는 2코어다. 여기에 sd-turbo 라이선스 게이트까지 겹친다.
+    #   VII-3① Generative AI_Music
+    #          모델 2.36GB — 저장 출력에 그대로 찍혀 있다
+    #          ("model.safetensors: reconstructing file: 0.00B / 2.36GB").
+    #          원고도 "최초 실행 시에는 모델 설치 시간이 몇 분 걸릴 수 있다"고 적고 있다.
+    #
+    # 두 노트북의 고정 판번호는 레인 A 가 PyPI 로 감시한다(pypi-diffusers-0-39-0 등).
+    # 실행 자체는 레인 C 에서 사람이 Colab 으로 확인한다.
+    dict(chapter=7, section="VII-3", file="Generative AI_Voice.ipynb",
+         marker="▶ 재생 (1.3x speed)", mode="complete", expect_var="y_fast",
+         note="VII-3 의 두 번째 노트북(② 음성 생성 AI). VII장에서 유일하게 **모델을 "
+              "하나도 내려받지 않는다** — gTTS 가 구글 서버에 실시간 요청을 보내 mp3 를 받고, "
+              "librosa 로 1.3배속 처리만 한다. "
+              "marker 는 저장 출력에서 그대로 가져왔다. time_stretch 다음 줄의 print 이므로 "
+              "속도 변환이 터지면 marker 가 안 나온다. expect_var='y_fast' 는 그 위 — "
+              "**터지지 않고 빈 배열이 돌아오는 경우**를 잡는 덤이다. "
+              "⚠ 레인 B 에서 유일하게 **외부 API 응답에 실행이 걸리는 노트북**이다. "
+              "구글 TTS 가 흔들리면 빨간불이 뜬다. --retry 1 이 한 번은 흡수해 주지만, "
+              "두 달 연속 재시도에 걸리면 일시 장애가 아니라 진짜 문제다. "
+              "접속이 막혔을 때의 모습은 이렇다(2026-08-20 재현) — "
+              "gtts.tts.gTTSError: 403 (Forbidden) from TTS API, 8번째 줄의 .save() 에서. "
+              "**이 서명이 보이면 노트북도 라이브러리도 아니고 구글 쪽이다.** "
+              "구글이 데이터센터 IP 를 막을 가능성이 있으므로, 이 항목만 반복해서 빨간불이면 "
+              "레인 C 로 옮기는 것을 검토할 것 — 책의 코드가 아니라 러너의 위치가 원인이기 때문이다. "
+              "⚠ 워크플로에 gTTS·librosa 설치가 필요하다 — 레인 B 는 !pip 줄을 지운다. "
+              "그리고 그 둘은 반드시 **다른 라이브러리와 같은 pip 명령 안**에 두어야 한다. "
+              "따로 깔면 gTTS 가 click 을 끌어내려 huggingface-hub 가 조용히 망가지고, "
+              "피해는 VII장이 아니라 **VI장 14개**에 간다. "
+              "mp3 디코딩에는 추가 설치가 필요 없다 — soundfile 이 품고 오는 "
+              "libsndfile 1.2.2 가 MP3 를 지원한다(2026-08-20 실측). "
+              "librosa 는 주 판번호가 1.0.0 으로 올라간 최신판에서도 "
+              "time_stretch(y, rate=) 시그니처가 그대로다(실측: 44100 → 33923, 비율 1.3). "
+              "노트북 고정값 0.11.0 과 Colab 기본값도 0.11.0 이다"),
 ]
 
 
@@ -552,9 +593,14 @@ ICON = {"OK": "✅", "MEASURE": "📏", "WARN": "⚠️", "FAIL": "❌"}
 
 
 def main() -> int:
+    # 기본 장 목록은 CASES 에서 뽑는다. 여기에 숫자를 옮겨 적으면 장이 늘어도
+    # 따라오지 않아, 손으로 돌릴 때만 조용히 일부 장을 건너뛰게 된다.
+    # (워크플로는 --chapters 를 항상 명시하므로 예약 실행은 이 값을 쓰지 않는다)
+    all_chapters = sorted({c["chapter"] for c in CASES})
     ap = argparse.ArgumentParser()
-    ap.add_argument("--chapters", nargs="+", type=int, default=[1, 2, 3, 4, 5],
-                    help="점검할 장 번호 (기본: 1 2 3 4 5)")
+    ap.add_argument("--chapters", nargs="+", type=int, default=all_chapters,
+                    help="점검할 장 번호 (기본: 등록된 전체 — "
+                         + " ".join(map(str, all_chapters)) + ")")
     ap.add_argument("--retry", type=int, default=0, metavar="N",
                     help="실패한 노트북만 N번까지 다시 돌려 본다 (기본: 0 = 다시 돌리지 않음)")
     args = ap.parse_args()
