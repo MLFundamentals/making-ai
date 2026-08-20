@@ -84,6 +84,7 @@ def main() -> int:
         checked_at = report["checked_at"]
         check_result = report["check_result"]
         state = report["state"]
+        asset_count = str(len(report["results"]))      # ← 추가
     except (json.JSONDecodeError, KeyError) as e:
         print(f"[오류] 보고서 형식이 맞지 않는다: {e}", file=sys.stderr)
         return 2
@@ -97,6 +98,7 @@ def main() -> int:
     try:
         html, old_date = replace_span_text(html, "checked-at", checked_at)
         html, old_result = replace_span_text(html, "check-result", check_result)
+        html, old_count = replace_span_text(html, "asset-count", asset_count)   # ← 추가
         html, old_dot = replace_dot_class(html, DOT_CLASS[state])
     except SystemExit as e:
         print(e, file=sys.stderr)
@@ -105,6 +107,7 @@ def main() -> int:
     changes = [
         ("최종 점검일", old_date, checked_at),
         ("상태 문구", old_result, check_result),
+        ("자산 건수", old_count, asset_count),        # ← 추가
         ("점 색깔", old_dot, DOT_CLASS[state]),
     ]
     changed = [c for c in changes if c[1] != c[2]]
