@@ -220,6 +220,38 @@ CASES = [
               "translate() 세 번이 모두 예외 없이 끝났다는 것뿐이다. "
               "⚠ 학습이 통째로 실패해 엉뚱한 번역이 나와도 초록불이다 — 번역 품질은 레인 C 몫"),
 
+    dict(chapter=6, section="VI-6", file="NLP_Language Model_02.ipynb",
+         marker="▶ Input: 'RNN models are'", mode="complete",
+         expect_text=["Top 3 predicted words:"],
+         note="Keras LSTM 200에포크(학습 데이터가 문장 3개라 배치가 1개뿐이다). "
+              "씨앗이 없어 **예측 단어와 확률은 확인하지 않는다** — 저장 출력 0.6581 vs "
+              "원고 인쇄값 0.8001 로 이미 실측이 두 번 갈렸다. 확인하는 것은 입력 문구와 "
+              "Top-3 출력 형식이 살아 있는가뿐이다. "
+              "⚠ 예측이 'used'가 아닌 다른 단어로 바뀌어도 초록불이다 — 원고의 설명이 "
+              "여전히 맞는지는 레인 C에서 사람이 볼 것"),
+
+    dict(chapter=6, section="VI-8", file="NLP_Attention_arrows.ipynb",
+         marker=None, expect_var="attention_scores", mode="complete",
+         note="print 가 하나도 없고 ipywidgets 드롭다운으로 그림만 그린다 → 변수로 완주를 확인. "
+              "어텐션 값은 학습한 것이 아니라 손으로 적어 넣은 시뮬레이션이라 완전히 결정적이다. "
+              "맨 끝에서 plot_attention_arrows(0) 을 실제로 부르므로 그리기 코드가 깨지면 예외로 터진다. "
+              "⚠ 그 호출이 `with output:`(ipywidgets.Output) 안에 있다. ipywidgets 8 의 __exit__ 은 "
+              "**커널이 있을 때만** 예외를 삼키므로 러너에서는 예외가 그대로 올라온다(2026-08-20 실측). "
+              "ipywidgets 7 은 무조건 삼켰다 — 판번호가 내려가면 이 노트북은 조용히 통과하게 된다. "
+              "⚠ 노트북에 !pip 줄이 없다. 워크플로가 ipywidgets 를 깔아 주어야 한다"),
+
+    dict(chapter=6, section="VI-8", file="NLP_Attention_VS_No-Attention_str.ipynb",
+         marker="=== REVERSE TASK ===", mode="complete",
+         expect_text=["=== COPY TASK ===", "입력(길이 30): abcdefghijklmnopqrstuvwxyzabcd"],
+         note="코드 240여 줄에 seq2seq 모델 4개(copy·reverse × 기본·어텐션)를 15에포크씩 학습한다. "
+              "**이 장에서 유일하게 씨앗이 다 걸린 노트북이다**(PYTHONHASHSEED·random·numpy·tf). "
+              "그런데도 생성 결과는 확인하지 않는다 — 씨앗은 같은 TF 판번호 안에서만 재현을 보장하고, "
+              "러너는 일부러 최신 TF로 돌리기 때문이다. 확인하는 것은 두 task 가 모두 끝났는가와 "
+              "길이 30 입력 문자열뿐이다. "
+              "⚠ '어텐션 모델은 장문을 재현하고 기본 모델은 실패한다'는 이 절의 핵심 주장은 "
+              "점검되지 않는다 — 값으로 못박으면 TF 판번호가 오를 때마다 빨간불이 뜬다. 레인 C 몫. "
+              "참고: 이 노트북은 스스로 TF 판번호를 찍어 준다(Current TensorFlow version:)"),
+
     # VI-9 — 2026-08-18 복구 완료.
     # transformers v5가 pipeline("question-answering")·("summarization")·("translation")을
     # 제거해 통째로 고장났던 노트북이다. 세 셀 모두 모델을 직접 부르는 방식으로 고쳤고,
