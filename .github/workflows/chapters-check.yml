@@ -53,6 +53,8 @@ jobs:
     #   I~V장 29개 노트북 실행 3.8분  ·  VI장 14개 노트북 실행 5.3분(최악 7.5분)
     #   무거운 라이브러리 설치 1.8분  ·  checkout·setup-python 등 나머지
     #   → 최악값으로 잡아도 17분 안팎이다.
+    # ⚠ VII장 등록분은 아직 실측 전이다. librosa 가 numba·llvmlite 를 끌고 오므로
+    #    위의 설치 1.8분은 늘어난다. 첫 실행 로그로 다시 잴 것.
     # ⚠ 같은 코드가 러너 상태에 따라 65%까지 차이 난다(VI-8 _str: 205초 ~ 338초).
     #    시간 판단은 항상 최악값으로 할 것.
     timeout-minutes: 60
@@ -95,6 +97,21 @@ jobs:
       # ipywidgets 는 VI-8 'NLP_Attention_arrows' 가 쓴다(드롭다운 UI).
       # 이 노트북에는 !pip 줄이 아예 없다 — Colab 기본 제공에 기대고 있기 때문인데,
       # 러너에는 기본 제공이 없으므로 여기서 깔아 준다.
+      # VII-1 'Generative AI_Text Generator' 도 같은 처지다(!pip 줄이 없다).
+      #
+      # gTTS·librosa 는 VII-3② 'Generative AI_Voice' 가 쓴다.
+      # ⚠ 반드시 아래 **같은 pip 명령 안**에 둘 것. 따로 깔면 gTTS 가 click 을
+      #    끌어내려 huggingface-hub 가 조용히 망가진다. 노트북 저장 출력에 그 경고가
+      #    그대로 남아 있다 — "huggingface-hub requires click>=8.4.2,
+      #    but you have click 8.1.8". VI장 14개가 전부 huggingface-hub 에 기대므로
+      #    이 오염은 VII장이 아니라 VI장을 무너뜨린다.
+      #    한 명령에 넣어야 해석기가 모든 제약을 한 번에 보고 맞는 조합을 고른다.
+      # mp3 디코딩에는 별도 설치가 필요 없다. soundfile 이 품고 오는
+      # libsndfile 1.2.2 가 MP3 를 지원한다 (2026-08-20 실측). ffmpeg 는 필요 없다.
+      #
+      # VII-2 Diffusion(diffusers) 과 VII-3① Music 은 레인 B 제외 대상이라 깔지 않는다.
+      # 두 노트북의 고정 판번호는 레인 A 가 PyPI 로 감시한다
+      # (pypi-diffusers-0-39-0 · pypi-accelerate-1-14-0 등).
       - name: 무거운 라이브러리가 필요한가
         id: heavy
         run: |
@@ -115,6 +132,7 @@ jobs:
         run: |
           pip install transformers sentencepiece accelerate gradio \
                       sentence-transformers bertviz ipywidgets \
+                      gTTS librosa \
                       torch --extra-index-url https://download.pytorch.org/whl/cpu
 
       # VI장 이후를 돌 때는 무거운 라이브러리의 판번호도 함께 남긴다.
@@ -152,8 +170,9 @@ jobs:
           mods = ["numpy", "pandas", "matplotlib", "sklearn",
                   "tensorflow", "keras", "gymnasium", "seaborn"]
           if os.getenv("HEAVY") == "true":
-              mods += ["torch", "transformers", "gradio",
-                       "sentence_transformers", "bertviz"]
+              mods += ["torch", "transformers", "sentencepiece", "accelerate",
+                       "gradio", "sentence_transformers", "bertviz",
+                       "gtts", "librosa"]
           for m in mods:
               print(m, ver(m))
           PY
