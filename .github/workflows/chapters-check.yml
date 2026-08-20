@@ -28,9 +28,9 @@ on:
   workflow_dispatch:
     inputs:
       chapters:
-        description: "점검할 장 (공백으로 구분). 예: 1 2 3 4 5 / 1 2 / 4 5"
+        description: "점검할 장 (공백으로 구분). 예: 1 2 3 4 5 6 / 1 2 / 6"
         required: false
-        default: "1 2 3 4 5"
+        default: "1 2 3 4 5 6"
       # ⚠ 이 default 는 **버튼을 눌렀을 때 칸에 채워지는 값**일 뿐이다.
       #   예약 실행에는 입력값이 아예 없으므로 아래 jobs.check.env.CHAPTERS 의
       #   기본값이 쓰인다. 장 목록을 바꿀 때는 두 곳을 함께 고칠 것.
@@ -49,14 +49,19 @@ jobs:
   check:
     name: 노트북 대역 실행
     runs-on: ubuntu-latest
-    # MNIST CNN이 러너(2코어)에서 오래 걸린다. 넉넉히 잡아 둔다.
+    # 2026-08-20 실측으로 잡은 시간 예산 (제한 60분, 여유 3배 이상)
+    #   I~V장 29개 노트북 실행 3.8분  ·  VI장 14개 노트북 실행 5.3분(최악 7.5분)
+    #   무거운 라이브러리 설치 1.8분  ·  checkout·setup-python 등 나머지
+    #   → 최악값으로 잡아도 17분 안팎이다.
+    # ⚠ 같은 코드가 러너 상태에 따라 65%까지 차이 난다(VI-8 _str: 205초 ~ 338초).
+    #    시간 판단은 항상 최악값으로 할 것.
     timeout-minutes: 60
 
     env:
       # 점검할 장을 정하는 자리는 여기 하나뿐이다.
       # 예약 실행에는 입력값이 없으므로 오른쪽 기본값이 그대로 쓰인다.
       # (위 workflow_dispatch 의 default 는 버튼 칸을 채우는 값일 뿐이다)
-      CHAPTERS: ${{ github.event.inputs.chapters || '1 2 3 4 5' }}
+      CHAPTERS: ${{ github.event.inputs.chapters || '1 2 3 4 5 6' }}
 
     steps:
       - name: 저장소 내려받기
