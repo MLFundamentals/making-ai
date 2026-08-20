@@ -206,6 +206,25 @@ CASES = [
               "노트북은 판번호를 못박아 두었지만 여기서는 !pip 줄을 지우고 최신판으로 돌린다 — "
               "**빨간불은 '독자가 지금 못 쓴다'가 아니라 '고정을 풀면 깨진다'는 뜻이다**"),
 
+    # VI-9 — 같은 절의 두 번째 노트북. 위의 NLP_Transformers 와는 별개의 파일이다.
+    # 2026-08-20 복구 완료: transformers v5 는 기본 어텐션이 sdpa 라서
+    # output_attentions=True 만으로는 어텐션 행렬을 아예 만들지 않는다(빈 튜플이 온다).
+    # 네 셀 모두 attn_implementation="eager" 를 명시해 되살렸다.
+    dict(chapter=6, section="VI-9", file="NLP_Transformer with BertViz.ipynb",
+         marker="['[CLS]', 'the', 'cat', 'sat'",
+         mode="complete", expect_var="attn",
+         note="코드 셀 5개 전부 실행한다 — 0 준비 · 1 BERT head_view · 2 GPT-2 head_view · "
+              "3 Marian model_view · 4 Neuron View(bertviz 자체 BERT 복사본). "
+              "그림 자체는 브라우저가 그리므로 러너가 볼 수 없지만, **bertviz 의 세 함수는 "
+              "모두 호출 즉시 어텐션을 소비한다** (head_view·model_view → format_attention(), "
+              "neuron_view.show() → get_attention()). 어텐션이 비면 torch.stack 에서 "
+              "RuntimeError, 차원이 4가 아니면 ValueError 로 터진다 — 이번 고장도 그렇게 잡혔다. "
+              "따라서 '조용히 통과'는 일어나지 않는다. marker 는 셀 1의 print(tokens) 출력이고 "
+              "난수가 없어 완전히 결정적이다. expect_var='attn' 은 셀 2(GPT-2)의 어텐션 "
+              "튜플이 비어 있지 않은지 보는 덤이다(셀 3·4가 덮어쓰지 않는다). "
+              "⚠ 셀 4의 model·tokenizer 는 len() 이 되지 않으므로 expect_var 로 쓰면 안 된다. "
+              "⚠ 워크플로에 bertviz 설치가 필요하다 — 레인 B 는 !pip 줄을 지운다"),
+
     dict(chapter=6, section="VI-10", file="NLP_BERT_pipeline.ipynb",
          marker="[대역] 화면을 띄우는 대신", mode="complete",
          note="셀 3개 모두 작은 모델이라 통째로 돌린다 — bert-base-uncased(마스크 채우기) · "

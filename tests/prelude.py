@@ -9,7 +9,8 @@ tests/prelude.py — 레인 B(월간 노트북 실행) 전용 '대역' 모음
 대역을 세우는 곳은 세 군데뿐이다.
 
   1. input()              — 사람 대신 미리 정해둔 답을 순서대로 내어준다
-  2. google.colab.auth    — 인증 팝업 대신 "성공했다"고만 대답한다
+  2. google.colab         — auth 는 인증 팝업 대신 "성공했다"고만 대답하고,
+                            output 은 위젯 스위치를 켜는 시늉만 한다
   3. gspread              — 시트를 읽는 척하면서 공개 gviz CSV에서 같은 값을 가져온다
 
 ⚠ 대역이 가리는 것(레인 C에서 사람이 확인해야 하는 것)
@@ -183,6 +184,24 @@ def _install_google_auth() -> None:
     google.colab = colab
     sys.modules["google.colab"] = colab
     sys.modules["google.colab.auth"] = auth
+
+    # --- google.colab.output -------------------------------------------------
+    # 위젯을 쓰는 노트북의 머리에 늘 붙는 두 줄이다.
+    #     from google.colab import output
+    #     output.enable_custom_widget_manager()
+    # Colab 화면에서 자바스크립트 위젯(BertViz의 어텐션 그림 등)을 허용하는 스위치다.
+    # 러너에는 화면이 없으므로 스위치를 켜는 시늉만 한다.
+    #
+    # ⚠ 이것이 없으면 `from google.colab import output` 한 줄에서 노트북이 죽는다.
+    #   위의 가짜 google.colab 은 __path__ 가 빈 리스트라서, 파이썬이 하위 모듈
+    #   'output' 을 찾아 나설 때 찾아볼 곳이 하나도 없어 ModuleNotFoundError 가 된다.
+    #   __path__ 를 비워 둔 것은 진짜 google.protobuf 를 지키기 위한 조치이므로
+    #   (위의 주석 참조) 바꾸지 말고, 필요한 하위 모듈을 여기에 하나씩 넣는다.
+    colab_output = _fake_module("google.colab.output")
+    colab_output.enable_custom_widget_manager = lambda *a, **k: None
+    colab_output.disable_custom_widget_manager = lambda *a, **k: None
+    colab.output = colab_output
+    sys.modules["google.colab.output"] = colab_output
 
     # --- google.auth.default -------------------------------------------------
     # google-auth가 실제로 깔려 있으면 default()만 갈아끼운다.
