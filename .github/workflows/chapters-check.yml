@@ -28,9 +28,9 @@ on:
   workflow_dispatch:
     inputs:
       chapters:
-        description: "점검할 장 (공백으로 구분). 예: 1 2 3 4 5 6 / 1 2 / 6"
+        description: "점검할 장 (공백으로 구분). 예: 1 2 3 4 5 6 7 / 1 2 / 7"
         required: false
-        default: "1 2 3 4 5 6"
+        default: "1 2 3 4 5 6 7"
       # ⚠ 이 default 는 **버튼을 눌렀을 때 칸에 채워지는 값**일 뿐이다.
       #   예약 실행에는 입력값이 아예 없으므로 아래 jobs.check.env.CHAPTERS 의
       #   기본값이 쓰인다. 장 목록을 바꿀 때는 두 곳을 함께 고칠 것.
@@ -53,8 +53,9 @@ jobs:
     #   I~V장 29개 노트북 실행 3.8분  ·  VI장 14개 노트북 실행 5.3분(최악 7.5분)
     #   무거운 라이브러리 설치 1.8분  ·  checkout·setup-python 등 나머지
     #   → 최악값으로 잡아도 17분 안팎이다.
-    # ⚠ VII장 등록분은 아직 실측 전이다. librosa 가 numba·llvmlite 를 끌고 오므로
-    #    위의 설치 1.8분은 늘어난다. 첫 실행 로그로 다시 잴 것.
+    # ⚠ VII장은 아직 1개만 등록돼 있다(VII-3② 7초, 2026-08-20 실측).
+    #    librosa 가 numba·llvmlite 를 끌고 오므로 위의 설치 1.8분은 늘어난다.
+    #    설치 시간은 Summary 의 「합계」가 아니라 **Actions 화면의 작업 전체 시간**에서 잰다.
     # ⚠ 같은 코드가 러너 상태에 따라 65%까지 차이 난다(VI-8 _str: 205초 ~ 338초).
     #    시간 판단은 항상 최악값으로 할 것.
     timeout-minutes: 60
@@ -63,7 +64,7 @@ jobs:
       # 점검할 장을 정하는 자리는 여기 하나뿐이다.
       # 예약 실행에는 입력값이 없으므로 오른쪽 기본값이 그대로 쓰인다.
       # (위 workflow_dispatch 의 default 는 버튼 칸을 채우는 값일 뿐이다)
-      CHAPTERS: ${{ github.event.inputs.chapters || '1 2 3 4 5 6' }}
+      CHAPTERS: ${{ github.event.inputs.chapters || '1 2 3 4 5 6 7' }}
 
     steps:
       - name: 저장소 내려받기
