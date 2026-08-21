@@ -1,0 +1,129 @@
+name: 분기 실전 점검 알림
+
+# 레인 C — Colab 실전 점검 알림
+#
+# 레인 A(주간)와 레인 B(월간)는 cron 이 알아서 돌지만, 레인 C 는 사람이
+# Colab 에서 손으로 돈다. 알림이 없으면 **잊히고, 잊히면 없는 것과 같다.**
+#
+# 하는 일은 하나다: 분기마다 깨어나 이슈를 연다.
+# 이슈 본문은 tests/lane_c_checklist.md 를 그대로 옮긴 것이라,
+# 점검 목록을 고칠 때 이 워크플로를 건드릴 필요가 없다.
+#
+# 열려 있는 이슈 개수 = 밀린 점검 횟수. 다 하면 닫는다.
+#
+# ⚠ 예약 실행은 저장소가 60일 조용하면 자동으로 멈춘다. 이 워크플로는 90일
+#   주기라 혼자서는 스스로를 깨울 수 없다. **레인 A 의 주간 커밋이 깨워두고 있다.**
+#   레인 A 를 끄면 이 알림도 함께 조용해진다.
+
+on:
+  schedule:
+    # 1·4·7·10월 1일 00:00 UTC = 09:00 KST (레인 A 와 같은 시각대)
+    - cron: "0 0 1 1,4,7,10 *"
+  workflow_dispatch:
+    inputs:
+      force:
+        description: "마지막 실행이 최근이어도 이슈를 연다 (시험용)"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  remind:
+    name: 레인 C 점검 이슈 열기
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 저장소 받기
+        uses: actions/checkout@v7
+
+      # 마지막 실행으로부터 얼마나 지났는지 센다.
+      # 80일이 안 됐으면 이슈를 열지 않는다 — 막 끝낸 사람에게 또 열어 주면
+      # 사람은 곧 이 알림 자체를 무시하게 된다.
+      - name: 경과일 계산
+        id: age
+        run: |
+          python - <<'PY' >> "$GITHUB_OUTPUT"
+          import datetime, os, pathlib, sys
+
+          p = pathlib.Path("tests/lane_c_last_run.txt")
+          last = None
+          if p.exists():
+              for line in p.read_text(encoding="utf-8").splitlines():
+                  line = line.strip()
+                  if line and not line.startswith("#"):
+                      last = line
+                      break
+
+          if not last:
+              # 파일이 없거나 비었다 — 조용히 넘기지 않고 반드시 알린다.
+              print("days=9999")
+              print("last=(기록 없음)")
+              sys.exit(0)
+
+          try:
+              d = datetime.date.fromisoformat(last)
+          except ValueError:
+              print("days=9999")
+              print(f"last=(형식 오류: {last})")
+              sys.exit(0)
+
+          days = (datetime.date.today() - d).days
+          print(f"days={days}")
+          print(f"last={d.isoformat()}")
+          PY
+
+      - name: 이미 열린 이슈가 있는지 확인
+        id: existing
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          # 라벨이 아직 만들어지기 전(처음 실행)에는 gh 가 오류를 낼 수 있다.
+          # 그때는 0으로 본다 — 이슈가 하나 더 열리는 것보다
+          # 열려야 할 이슈가 안 열리는 쪽이 훨씬 나쁘다.
+          n=$(gh issue list --label "lane-c" --state open --json number --jq 'length' 2>/dev/null || echo 0)
+          echo "open_count=$n" >> "$GITHUB_OUTPUT"
+          echo "열려 있는 레인 C 이슈: $n 개"
+
+      - name: 이슈 열기
+        id: open
+        env:
+          GH_TOKEN: ${{ github.token }}
+          DAYS: ${{ steps.age.outputs.days }}
+          LAST: ${{ steps.age.outputs.last }}
+          OPEN_COUNT: ${{ steps.existing.outputs.open_count }}
+          FORCE: ${{ github.event.inputs.force }}
+        run: |
+          if [ "$OPEN_COUNT" != "0" ] && [ "$FORCE" != "true" ]; then
+            echo "::notice::이미 열린 레인 C 이슈가 $OPEN_COUNT 개 있다. 새로 열지 않는다."
+            echo "먼저 그 이슈를 처리할 것."
+            exit 0
+          fi
+
+          if [ "$DAYS" -lt 80 ] && [ "$FORCE" != "true" ]; then
+            echo "::notice::마지막 실행이 ${DAYS}일 전($LAST)이다. 아직 이르므로 열지 않는다."
+            exit 0
+          fi
+
+          # 라벨이 없으면 만든다(처음 한 번). 이미 있으면 조용히 넘어간다.
+          gh label create "lane-c" \
+            --color "0E8A16" \
+            --description "레인 C · Colab 실전 점검" 2>/dev/null || true
+
+          {
+            echo "마지막 실전 점검: **${LAST}** · **${DAYS}일 전**"
+            echo ""
+            echo "---"
+            echo ""
+            cat tests/lane_c_checklist.md
+          } > /tmp/body.md
+
+          url=$(gh issue create \
+            --title "레인 C · 실전 점검 ($(date -u +%Y-%m))" \
+            --label "lane-c" \
+            --body-file /tmp/body.md)
+
+          echo "이슈를 열었다: $url"
+          echo "::notice::레인 C 점검 이슈를 열었다 — $url"
