@@ -58,7 +58,33 @@ transcribe("[TED-Ed] Sample Video_30s.mp4")      # VIII-3 : fn=transcribe,      
 
 ---
 
-## C-2 · 눈으로 볼 것 — 레인 B 가 초록불인데 값으로 확인되지 않는 것들
+## C-2 · 드라이브 파일 11건 눈으로 대조
+
+레인 A 는 이 11건을 **`manual` 로 표시하고 건너뛴다.** 드라이브 안의 개별 파일은
+공개 폴더 URL 만으로 존재 여부를 확인할 수 없기 때문이다. 주간 보고서 맨 끝의
+「수동 확인 대상 11건은 레인 C에서 폴더 목록 대조」가 이 절을 가리킨다.
+
+드라이브의 **`실습데이터/` 폴더를 열고** 아래 이름이 그대로 있는지 본다.
+**이름이 한 글자만 달라도 노트북은 파일을 못 찾는다.**
+
+- [ ] `Patient Registration Data` (II-2-3)
+- [ ] `Patient Clinical Data` (II-2-3)
+- [ ] `Patient Health Monitoring Data` (II-2-3)
+- [ ] `Patient Registration Data_Processed` (II-2-4)
+- [ ] `Patient Health Monitoring Data_Processed` (II-2-4)
+- [ ] `Data_Population Status_Kor_20251227` (II-1)
+- [ ] `[TED-Ed] Sample Video_30s.mp4` (VIII-3)
+- [ ] `[cosmoswag_kr] Sample Video_30s.mp4` (VIII-3)
+- [ ] `[Sora] smiling woman.mp4` (VIII-1)
+- [ ] `[DALL·E] gift box.png` (VIII-1) — **`·` 는 가운뎃점이다. 마침표가 아니다**
+- [ ] `[Pixabay] crowd-cheers.mp3` (VIII-1)
+
+- [ ] 폴더 안에 **목록에 없는 파일**이 있는가
+      → 있다면 `assets.csv` 에 빠진 것이거나 원고에서만 쓰이는 것이다. 어느 쪽인지 확인한다
+
+---
+
+## C-3 · 눈으로 볼 것 — 레인 B 가 초록불인데 값으로 확인되지 않는 것들
 
 **예외가 안 났다는 것은 성공이 아니다.** 아래는 코드가 판정할 수 없어 사람이 봐야 한다.
 
