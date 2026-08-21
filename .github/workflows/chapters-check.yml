@@ -136,8 +136,27 @@ jobs:
         run: |
           pip install transformers sentencepiece accelerate gradio \
                       sentence-transformers bertviz ipywidgets \
-                      gTTS librosa \
+                      librosa \
                       torch --extra-index-url https://download.pytorch.org/whl/cpu
+
+          # gTTS 만 따로, 그것도 --no-deps 로 깐다.
+          #
+          # gTTS 2.5.4 는 click<8.2 를, huggingface-hub 1.27+ 는 click>=8.4.2 를 요구한다.
+          # 겹치는 구간이 없어서 pip 는 둘 중 하나를 포기해야 하는데,
+          # 한 명령에 넣으면 **huggingface-hub 쪽을 낮춘다** — 1.28.0 대신 1.16.1 이 깔린다
+          # (2026-08-21 실측). 그러면 러너가 '최신에서 깨지는지 미리 본다'는 목적을
+          # 하필 모델 내려받기 경로 전체를 담당하는 huggingface-hub 에서만 잃는다.
+          #
+          # --no-deps 가 안전한 근거: gtts/__init__.py 는 .version 과 .tts 만 부르고
+          # click 은 gtts/cli.py(명령줄 도구)에만 있다. 노트북이 쓰는
+          # `from gtts import gTTS` 는 click 없이 동작한다.
+          # 나머지 의존인 requests 는 transformers 가 이미 깔아 둔다.
+          #
+          # ⚠ 독자의 노트북은 반대다. VII-3② 는 `!pip install gTTS==2.5.4 librosa==0.11.0`
+          #   한 명령 그대로 두고 --no-deps 를 쓰지 않는다. 독자는 세션이 노트북마다
+          #   따로라 huggingface-hub 가 낮아져도 그 세션 안에서 끝나고,
+          #   빨간 경고 글씨는 나오지만 그것뿐이다.
+          pip install --no-deps gTTS
 
       # VI장 이후를 돌 때는 무거운 라이브러리의 판번호도 함께 남긴다.
       # 노트북에는 판번호가 박혀 있지만 러너는 그 !pip 줄을 지우고 최신판으로 돌린다.
@@ -174,7 +193,11 @@ jobs:
           mods = ["numpy", "pandas", "matplotlib", "sklearn",
                   "tensorflow", "keras", "gymnasium", "seaborn"]
           if os.getenv("HEAVY") == "true":
-              mods += ["torch", "transformers", "sentencepiece", "accelerate",
+              # huggingface_hub 은 노트북이 직접 import 하지 않지만 반드시 남긴다.
+              # transformers 의 모델 내려받기가 전부 이 패키지를 지나가는데,
+              # 목록에 없던 동안 gTTS 때문에 11판 낮은 것이 깔려 있어도 아무도 몰랐다.
+              mods += ["torch", "transformers", "huggingface_hub",
+                       "sentencepiece", "accelerate",
                        "gradio", "sentence_transformers", "bertviz",
                        "ipywidgets", "gtts", "librosa"]
           for m in mods:
