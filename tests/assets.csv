@@ -11,8 +11,8 @@ sheet-matches-record,gsheet,Matches_Record,1SyBg64IX_uX290hsIwGH3zZwe_Aeb1SBLx14
 data-nsmc-train,dataset,NSMC 학습 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt,http,high,VI-2,,GitHub raw
 data-nsmc-test,dataset,NSMC 평가 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt,http,high,VI-2,,GitHub raw
 data-glove-6b,dataset,GloVe 6B 임베딩,http://nlp.stanford.edu/data/glove.6B.zip,http,high,VI-5,yes,http · 약 822MB · downloads.cs.stanford.edu로 리다이렉트되는 것이 정상
-data-tfds-cats-vs-dogs,dataset,TFDS cats_vs_dogs,https://www.tensorflow.org/datasets/catalog/cats_vs_dogs,http,medium,VI-4,,카탈로그 페이지로 간접 확인
-data-tfds-imdb-reviews,dataset,TFDS imdb_reviews,https://www.tensorflow.org/datasets/catalog/imdb_reviews,http,medium,VI-5,,카탈로그 페이지로 간접 확인
+data-tfds-cats-vs-dogs,dataset,TFDS cats_vs_dogs 원본,https://download.microsoft.com/download/3/E/1/3E1C3F21-ECDB-4869-8368-6DEBA77B919F/kagglecatsanddogs_5340.zip,http,medium,VI-4,yes,tfds 4.9.10 의 _URL · 약 800MB · 이전에는 카탈로그 페이지(tensorflow.org/datasets/catalog/cats_vs_dogs)를 봤으나 원본이 죽어도 살아 있어 늘 초록불이었다 · 첫 회차가 통과하면 high 로 올린다
+data-tfds-imdb-reviews,dataset,TFDS imdb_reviews 원본,http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz,http,medium,VI-5,yes,tfds 4.9.10 의 _DOWNLOAD_URL · http · GloVe 와 같은 stanford.edu 계열 · 이전에는 카탈로그 페이지를 봤으나 원본이 죽어도 살아 있어 늘 초록불이었다 · 첫 회차가 통과하면 high 로 올린다
 hf-xlm-roberta-squad2,hf_model,다국어 QA,deepset/xlm-roberta-base-squad2,hf,high,VI-9,,
 hf-kobart-summarization,hf_model,한국어 요약,digit82/kobart-summarization,hf,high,VI-9,,
 hf-nllb-600m,hf_model,다국어 번역,facebook/nllb-200-distilled-600M,hf,high,VI-9,,레인 B 제외 대상(용량)
