@@ -46,3 +46,4 @@ pypi-librosa-0-11-0,pypi,고정 판번호 librosa 0.11.0,https://pypi.org/pypi/l
 pypi-ffmpeg-python-0-2-0,pypi,고정 판번호 ffmpeg-python 0.2.0,https://pypi.org/pypi/ffmpeg-python/0.2.0/json,http,critical,VIII-3,,위와 같음
 pypi-tfds-4-9-10,pypi,고정 판번호 tensorflow-datasets 4.9.10,https://pypi.org/pypi/tensorflow-datasets/4.9.10/json,http,critical,VI-4;VI-5,,노트북이 이 판번호로 못박혀 있다. 사라지면 독자는 첫 줄에서 막힌다
 pypi-tf-metadata-1-17-3,pypi,고정 판번호 tensorflow-metadata 1.17.3,https://pypi.org/pypi/tensorflow-metadata/1.17.3/json,http,critical,VI-4;VI-5,,🔴 판번호를 올리지 말 것. 1.21.0(2026-06-09)부터 pb2 7개에 protobuf 런타임 검사가 들어갔는데 Colab 런타임이 5.29.6 이라 통과 못 한다 → tfds 가 import 실패를 삼켜 tfds.load 가 사라진다. 1.17.3 은 그 검사가 없다
+pypi-importlib-resources-7-1-0,pypi,고정 판번호 importlib_resources 7.1.0,https://pypi.org/pypi/importlib_resources/7.1.0/json,http,critical,VI-4;VI-5,,🔴 tfds 4.9.10 이 이 패키지를 조건 없이 import 하면서 의존성은 python_version<3.9 로만 선언했다. Colab 파이썬 3.13 이미지에는 없어서 tfds.load 가 데이터셋을 처음 준비할 때 죽는다. 우리가 대신 채워 준다
