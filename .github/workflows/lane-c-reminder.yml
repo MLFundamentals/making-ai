@@ -120,10 +120,25 @@ jobs:
             cat tests/lane_c_checklist.md
           } > /tmp/body.md
 
-          url=$(gh issue create \
+          # ⚠ 이슈를 못 열면 **요란하게 실패해야 한다.**
+          #   레인 C 알림 체계 전체가 이 이슈 하나에 얹혀 있다. 조용히 넘어가면
+          #   분기마다 워크플로가 돌면서 아무 이슈도 안 열리고 아무도 모른다.
+          #   (저장소 Settings → Features → Issues 가 꺼지면 정확히 그렇게 된다)
+          if ! url=$(gh issue create \
             --title "레인 C · 실전 점검 ($(date -u +%Y-%m))" \
             --label "lane-c" \
-            --body-file /tmp/body.md)
+            --body-file /tmp/body.md); then
+            echo "::error::레인 C 점검 이슈를 열지 못했다."
+            echo "  먼저 볼 곳: Settings → Features → Issues 가 켜져 있는가."
+            echo "  그다음: 이 워크플로의 permissions 에 issues:write 가 있는가."
+            exit 1
+          fi
+
+          # 주소가 비어 있으면 명령은 성공했는데 아무것도 안 만들어진 것이다.
+          if [ -z "$url" ]; then
+            echo "::error::gh 는 성공했다는데 이슈 주소가 비었다. 직접 확인할 것."
+            exit 1
+          fi
 
           echo "이슈를 열었다: $url"
           echo "::notice::레인 C 점검 이슈를 열었다 — $url"
