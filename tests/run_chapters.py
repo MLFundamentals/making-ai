@@ -329,7 +329,8 @@ CASES = [
     #                                   원고가 "20분 이상"이라 적고 있다.
     #   VI-9 NLP_Transformer-based translation model — mBART-large-50(약 2.4GB).
     # 셋 다 러너(GPU 없는 2코어)에서 60분 제한을 넘길 것이 거의 확실하다.
-    # 앞의 둘은 tensorflow_datasets 도 필요한데 워크플로에 없다.
+    # VI-4 는 tensorflow_datasets 도 필요한데 워크플로에 없다.
+    # (VI-5 는 2026-11-07 부터 GloVe·IMDB 를 모두 Hugging Face 에서 받는다 — tfds 를 쓰지 않는다.)
     # → 레인 C에서 사람이 Colab으로 확인할 것.
 
     # VI-9 — 2026-08-18 복구 완료.
