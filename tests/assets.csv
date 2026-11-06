@@ -10,9 +10,9 @@ sheet-shopping,gsheet,Shopping Behavior Dataset,1MI-HWfwR5-Dp-A8dJ4DfOVGGau-9Qdy
 sheet-matches-record,gsheet,Matches_Record,1SyBg64IX_uX290hsIwGH3zZwe_Aeb1SBLx146zSGIro,gsheet,critical,IX-3,,본문은 export?format=csv 사용
 data-nsmc-train,dataset,NSMC 학습 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt,http,high,VI-2,,GitHub raw
 data-nsmc-test,dataset,NSMC 평가 데이터,https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt,http,high,VI-2,,GitHub raw
-data-glove-6b,dataset,GloVe 6B 임베딩,http://nlp.stanford.edu/data/glove.6B.zip,http,high,VI-5,yes,http · 약 822MB · downloads.cs.stanford.edu로 리다이렉트되는 것이 정상
+data-glove-6b,dataset,GloVe 6B 임베딩,https://huggingface.co/stanfordnlp/glove/resolve/main/glove.6B.zip,http,high,VI-5,yes,2026-11-07 스탠퍼드 http 서버(nlp.stanford.edu:80) 폐쇄로 Hugging Face 공식 사본으로 이전 · 약 862MB · CDN으로 리다이렉트되는 것이 정상
 data-tfds-cats-vs-dogs,dataset,TFDS cats_vs_dogs 원본,https://download.microsoft.com/download/3/E/1/3E1C3F21-ECDB-4869-8368-6DEBA77B919F/kagglecatsanddogs_5340.zip,http,high,VI-4,yes,tfds 4.9.10 의 _URL · 2026-08-21 실측 824887076 bytes(787MiB) · 이전에는 카탈로그 페이지(tensorflow.org/datasets/catalog/cats_vs_dogs)를 봤으나 원본이 죽어도 살아 있어 늘 초록불이었다 · 파일이 멀쩡한데 두 주 연속 빨간불이면 medium 으로 되돌릴 것
-data-tfds-imdb-reviews,dataset,TFDS imdb_reviews 원본,http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz,http,high,VI-5,yes,tfds 4.9.10 의 _DOWNLOAD_URL · http · GloVe 와 같은 stanford.edu 계열 · 2026-08-21 실측 84125825 bytes(80MiB) · 이전에는 카탈로그 페이지를 봤으나 원본이 죽어도 살아 있어 늘 초록불이었다 · 파일이 멀쩡한데 두 주 연속 빨간불이면 medium 으로 되돌릴 것
+data-hf-imdb,dataset,IMDB 리뷰 (Hugging Face),https://huggingface.co/datasets/stanfordnlp/imdb/resolve/main/plain_text/train-00000-of-00001.parquet,http,high,VI-5,yes,2026-11-07 tfds imdb_reviews 원본(ai.stanford.edu:80) 폐쇄로 load_dataset("stanfordnlp/imdb")로 전환 · 대표로 train 파일(약 21MB)만 확인 · CDN으로 리다이렉트되는 것이 정상
 hf-xlm-roberta-squad2,hf_model,다국어 QA,deepset/xlm-roberta-base-squad2,hf,high,VI-9,,
 hf-kobart-summarization,hf_model,한국어 요약,digit82/kobart-summarization,hf,high,VI-9,,
 hf-nllb-600m,hf_model,다국어 번역,facebook/nllb-200-distilled-600M,hf,high,VI-9,,레인 B 제외 대상(용량)
