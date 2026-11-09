@@ -1,13 +1,13 @@
 {
-  "checked_at": "2026-11-02",
-  "checked_at_iso": "2026-11-02T13:12:17+09:00",
-  "state": "fail",
-  "check_result": "점검 실패 2건 — 확인 중",
-  "elapsed_sec": 65.2,
+  "checked_at": "2026-11-09",
+  "checked_at_iso": "2026-11-09T13:27:55+09:00",
+  "state": "ok",
+  "check_result": "전체 정상",
+  "elapsed_sec": 1.0,
   "counts": {
-    "OK": 35,
+    "OK": 37,
     "WARN": 0,
-    "FAIL": 2,
+    "FAIL": 0,
     "SKIP": 11
   },
   "results": [
@@ -22,7 +22,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 18,299 bytes",
-      "elapsed_ms": 302,
+      "elapsed_ms": 156,
       "extra": {
         "final_url": "https://mlfundamentals.github.io/making-ai/",
         "content_length": "18299"
@@ -39,7 +39,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 1,922 bytes",
-      "elapsed_ms": 173,
+      "elapsed_ms": 151,
       "extra": {
         "final_url": "https://mlfundamentals.github.io/",
         "content_length": "1922"
@@ -56,7 +56,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
-      "elapsed_ms": 689,
+      "elapsed_ms": 262,
       "extra": {
         "mode": "html"
       }
@@ -72,7 +72,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
-      "elapsed_ms": 272,
+      "elapsed_ms": 301,
       "extra": {
         "mode": "html"
       }
@@ -88,7 +88,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 접근 가능(HTML 추정) · GDRIVE_API_KEY 설정 시 정확도 향상",
-      "elapsed_ms": 304,
+      "elapsed_ms": 312,
       "extra": {
         "mode": "html"
       }
@@ -104,7 +104,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "100행 × 9열 · 헤더: Age, Gender, BMI",
-      "elapsed_ms": 549,
+      "elapsed_ms": 717,
       "extra": {
         "columns": 9,
         "data_rows": 100,
@@ -132,7 +132,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "10행 × 4열 · 헤더: BMI, Exercise_per_week, Diet",
-      "elapsed_ms": 600,
+      "elapsed_ms": 423,
       "extra": {
         "columns": 4,
         "data_rows": 10,
@@ -155,7 +155,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "2,000행 × 7열 · 헤더: Age, Gender, Pages_Viewed",
-      "elapsed_ms": 658,
+      "elapsed_ms": 717,
       "extra": {
         "columns": 7,
         "data_rows": 2000,
@@ -181,7 +181,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "1,200행 × 26열 · 헤더: match_id, fit_b, fit_r",
-      "elapsed_ms": 614,
+      "elapsed_ms": 625,
       "extra": {
         "columns": 26,
         "data_rows": 1200,
@@ -212,7 +212,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 14,628,807 bytes",
-      "elapsed_ms": 372,
+      "elapsed_ms": 414,
       "extra": {
         "final_url": "https://raw.githubusercontent.com/e9t/nsmc/master/ratings_train.txt",
         "content_length": "14628807"
@@ -229,7 +229,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 4,893,335 bytes",
-      "elapsed_ms": 297,
+      "elapsed_ms": 272,
       "extra": {
         "final_url": "https://raw.githubusercontent.com/e9t/nsmc/master/ratings_test.txt",
         "content_length": "4893335"
@@ -242,11 +242,14 @@
       "section": "VI-5",
       "severity": "high",
       "check": "http",
-      "url": "http://nlp.stanford.edu/data/glove.6B.zip",
-      "status": "FAIL",
-      "http_status": null,
-      "detail": "URLError: <urlopen error timed out>",
-      "elapsed_ms": 64570
+      "url": "https://huggingface.co/stanfordnlp/glove/resolve/main/glove.6B.zip",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 리다이렉트 → https://us.aws.cdn.hf.co/xet-bridge-us/621ffdc136468d709f18095d/ded22944ac944002f423d1cdb83de044851330e1a7fe19d74dc59ffa632ad294?user_id=public&xip=_1LIVOSYu8s&X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27glove.6B.zip%3B+filename%3D%22glove.6B.zip%22%3B&response-content-type=application%2Fzip&Expires=1794202074&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjIxZmZkYzEzNjQ2OGQ3MDlmMTgwOTVkL2RlZDIyOTQ0YWM5NDQwMDJmNDIzZDFjZGI4M2RlMDQ0ODUxMzMwZTFhN2ZlMTlkNzRkYzU5ZmZhNjMyYWQyOTRcXD91c2VyX2lkPXB1YmxpYyZ4aXA9XzFMSVZPU1l1OHMmWC1YZXQtQ2FzLVVpZD1wdWJsaWMmcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj1pbmxpbmUlM0IrZmlsZW5hbWUlMkElM0RVVEYtOCUyNyUyN2dsb3ZlLjZCLnppcCUzQitmaWxlbmFtZSUzRCUyMmdsb3ZlLjZCLnppcCUyMiUzQiZyZXNwb25zZS1jb250ZW50LXR5cGU9YXBwbGljYXRpb24lMkZ6aXAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkVwb2NoVGltZSI6MTc5NDIwMjA3NH19fV19&Signature=MEQCIGFzkBH4ni7735IJjVMhmRoUamcBCOUok%7EKQT-aq565cAiADsTfw76U2ju3jcUDKGw3tHxkslzdjOKk0biA6WmaU7w__&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+      "elapsed_ms": 177,
+      "extra": {
+        "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/621ffdc136468d709f18095d/ded22944ac944002f423d1cdb83de044851330e1a7fe19d74dc59ffa632ad294?user_id=public&xip=_1LIVOSYu8s&X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27glove.6B.zip%3B+filename%3D%22glove.6B.zip%22%3B&response-content-type=application%2Fzip&Expires=1794202074&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjIxZmZkYzEzNjQ2OGQ3MDlmMTgwOTVkL2RlZDIyOTQ0YWM5NDQwMDJmNDIzZDFjZGI4M2RlMDQ0ODUxMzMwZTFhN2ZlMTlkNzRkYzU5ZmZhNjMyYWQyOTRcXD91c2VyX2lkPXB1YmxpYyZ4aXA9XzFMSVZPU1l1OHMmWC1YZXQtQ2FzLVVpZD1wdWJsaWMmcmVzcG9uc2UtY29udGVudC1kaXNwb3NpdGlvbj1pbmxpbmUlM0IrZmlsZW5hbWUlMkElM0RVVEYtOCUyNyUyN2dsb3ZlLjZCLnppcCUzQitmaWxlbmFtZSUzRCUyMmdsb3ZlLjZCLnppcCUyMiUzQiZyZXNwb25zZS1jb250ZW50LXR5cGU9YXBwbGljYXRpb24lMkZ6aXAiLCJDb25kaXRpb24iOnsiRGF0ZUxlc3NUaGFuIjp7IkVwb2NoVGltZSI6MTc5NDIwMjA3NH19fV19&Signature=MEQCIGFzkBH4ni7735IJjVMhmRoUamcBCOUok%7EKQT-aq565cAiADsTfw76U2ju3jcUDKGw3tHxkslzdjOKk0biA6WmaU7w__&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256"
+      }
     },
     {
       "id": "data-tfds-cats-vs-dogs",
@@ -259,24 +262,27 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 824,887,076 bytes",
-      "elapsed_ms": 471,
+      "elapsed_ms": 381,
       "extra": {
         "final_url": "https://download.microsoft.com/download/3/E/1/3E1C3F21-ECDB-4869-8368-6DEBA77B919F/kagglecatsanddogs_5340.zip",
         "content_length": "824887076"
       }
     },
     {
-      "id": "data-tfds-imdb-reviews",
+      "id": "data-hf-imdb",
       "category": "dataset",
-      "name": "TFDS imdb_reviews 원본",
+      "name": "IMDB 리뷰 (Hugging Face)",
       "section": "VI-5",
       "severity": "high",
       "check": "http",
-      "url": "http://ai.stanford.edu/~amaas/data/sentiment/aclImdb_v1.tar.gz",
-      "status": "FAIL",
-      "http_status": null,
-      "detail": "URLError: <urlopen error timed out>",
-      "elapsed_ms": 64628
+      "url": "https://huggingface.co/datasets/stanfordnlp/imdb/resolve/main/plain_text/train-00000-of-00001.parquet",
+      "status": "OK",
+      "http_status": 200,
+      "detail": "HTTP 200 · 리다이렉트 → https://us.aws.cdn.hf.co/xet-bridge-us/621ffdd236468d709f181e77/7d30bb6e634c350424a4db373a4f40e0ce910f2c78809b7d6bb968ede8249396?X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27train-00000-of-00001.parquet%3B+filename%3D%22train-00000-of-00001.parquet%22%3B&user_id=public&xip=_1LIVOSYu8s&Expires=1794202074&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjIxZmZkZDIzNjQ2OGQ3MDlmMTgxZTc3LzdkMzBiYjZlNjM0YzM1MDQyNGE0ZGIzNzNhNGY0MGUwY2U5MTBmMmM3ODgwOWI3ZDZiYjk2OGVkZTgyNDkzOTZcXD9YLVhldC1DYXMtVWlkPXB1YmxpYyZyZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3dHJhaW4tMDAwMDAtb2YtMDAwMDEucGFycXVldCUzQitmaWxlbmFtZSUzRCUyMnRyYWluLTAwMDAwLW9mLTAwMDAxLnBhcnF1ZXQlMjIlM0ImdXNlcl9pZD1wdWJsaWMmeGlwPV8xTElWT1NZdThzIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJFcG9jaFRpbWUiOjE3OTQyMDIwNzR9fX1dfQ__&Signature=MEUCIFUrqXqGliJ-btDr3zNXwjcxh44k18sacfIIeTPR8-o2AiEAunbpJ1ZCJwcCkl8vu4kUnvxgGzKy5NnqlnKIfkNUCXM_&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256",
+      "elapsed_ms": 158,
+      "extra": {
+        "final_url": "https://us.aws.cdn.hf.co/xet-bridge-us/621ffdd236468d709f181e77/7d30bb6e634c350424a4db373a4f40e0ce910f2c78809b7d6bb968ede8249396?X-Xet-Cas-Uid=public&response-content-disposition=inline%3B+filename*%3DUTF-8%27%27train-00000-of-00001.parquet%3B+filename%3D%22train-00000-of-00001.parquet%22%3B&user_id=public&xip=_1LIVOSYu8s&Expires=1794202074&Policy=eyJTdGF0ZW1lbnQiOlt7IlJlc291cmNlIjoiaHR0cHM6Ly91cy5hd3MuY2RuLmhmLmNvL3hldC1icmlkZ2UtdXMvNjIxZmZkZDIzNjQ2OGQ3MDlmMTgxZTc3LzdkMzBiYjZlNjM0YzM1MDQyNGE0ZGIzNzNhNGY0MGUwY2U5MTBmMmM3ODgwOWI3ZDZiYjk2OGVkZTgyNDkzOTZcXD9YLVhldC1DYXMtVWlkPXB1YmxpYyZyZXNwb25zZS1jb250ZW50LWRpc3Bvc2l0aW9uPWlubGluZSUzQitmaWxlbmFtZSUyQSUzRFVURi04JTI3JTI3dHJhaW4tMDAwMDAtb2YtMDAwMDEucGFycXVldCUzQitmaWxlbmFtZSUzRCUyMnRyYWluLTAwMDAwLW9mLTAwMDAxLnBhcnF1ZXQlMjIlM0ImdXNlcl9pZD1wdWJsaWMmeGlwPV8xTElWT1NZdThzIiwiQ29uZGl0aW9uIjp7IkRhdGVMZXNzVGhhbiI6eyJFcG9jaFRpbWUiOjE3OTQyMDIwNzR9fX1dfQ__&Signature=MEUCIFUrqXqGliJ-btDr3zNXwjcxh44k18sacfIIeTPR8-o2AiEAunbpJ1ZCJwcCkl8vu4kUnvxgGzKy5NnqlnKIfkNUCXM_&Key-Pair-Id=01KXEF4KZ1B6FV465MAWR4M21F&Hash-Algorithm=SHA256"
+      }
     },
     {
       "id": "hf-xlm-roberta-squad2",
@@ -289,10 +295,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2024-09-26",
-      "elapsed_ms": 155,
+      "elapsed_ms": 85,
       "extra": {
         "model_id": "deepset/xlm-roberta-base-squad2",
-        "downloads": 30396,
+        "downloads": 31156,
         "last_modified": "2024-09-26T09:33:03.000Z"
       }
     },
@@ -307,10 +313,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2022-03-01",
-      "elapsed_ms": 117,
+      "elapsed_ms": 84,
       "extra": {
         "model_id": "digit82/kobart-summarization",
-        "downloads": 31366,
+        "downloads": 56392,
         "last_modified": "2022-03-01T13:48:13.000Z"
       }
     },
@@ -325,10 +331,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2024-02-14",
-      "elapsed_ms": 118,
+      "elapsed_ms": 82,
       "extra": {
         "model_id": "facebook/nllb-200-distilled-600M",
-        "downloads": 963076,
+        "downloads": 930601,
         "last_modified": "2024-02-14T17:18:36.000Z"
       }
     },
@@ -343,10 +349,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2023-09-28",
-      "elapsed_ms": 119,
+      "elapsed_ms": 82,
       "extra": {
         "model_id": "facebook/mbart-large-50-many-to-many-mmt",
-        "downloads": 42797,
+        "downloads": 60587,
         "last_modified": "2023-09-28T16:42:59.000Z"
       }
     },
@@ -361,10 +367,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2023-06-12",
-      "elapsed_ms": 114,
+      "elapsed_ms": 82,
       "extra": {
         "model_id": "klue/bert-base",
-        "downloads": 78133,
+        "downloads": 75768,
         "last_modified": "2023-06-12T12:30:04.000Z"
       }
     },
@@ -379,10 +385,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2021-09-23",
-      "elapsed_ms": 125,
+      "elapsed_ms": 84,
       "extra": {
         "model_id": "skt/kogpt2-base-v2",
-        "downloads": 21110,
+        "downloads": 38367,
         "last_modified": "2021-09-23T16:29:28.000Z"
       }
     },
@@ -397,10 +403,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2025-02-03",
-      "elapsed_ms": 113,
+      "elapsed_ms": 84,
       "extra": {
         "model_id": "Salesforce/blip-image-captioning-base",
-        "downloads": 1267230,
+        "downloads": 1278928,
         "last_modified": "2025-02-03T06:45:16.000Z"
       }
     },
@@ -415,10 +421,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2024-02-29",
-      "elapsed_ms": 120,
+      "elapsed_ms": 93,
       "extra": {
         "model_id": "openai/whisper-small",
-        "downloads": 4140257,
+        "downloads": 4375009,
         "last_modified": "2024-02-29T10:57:38.000Z"
       }
     },
@@ -433,10 +439,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2024-07-10",
-      "elapsed_ms": 114,
+      "elapsed_ms": 80,
       "extra": {
         "model_id": "stabilityai/sd-turbo",
-        "downloads": 613577,
+        "downloads": 469700,
         "last_modified": "2024-07-10T11:38:51.000Z"
       }
     },
@@ -451,10 +457,10 @@
       "status": "OK",
       "http_status": 200,
       "detail": "공개 · 최종수정 2023-11-17",
-      "elapsed_ms": 116,
+      "elapsed_ms": 81,
       "extra": {
         "model_id": "facebook/musicgen-small",
-        "downloads": 158017,
+        "downloads": 137076,
         "last_modified": "2023-11-17T13:56:10.000Z"
       }
     },
@@ -612,7 +618,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 32,598 bytes",
-      "elapsed_ms": 89,
+      "elapsed_ms": 111,
       "extra": {
         "final_url": "https://pypi.org/pypi/transformers/5.15.0/json",
         "content_length": "32598"
@@ -629,7 +635,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 19,211 bytes",
-      "elapsed_ms": 22,
+      "elapsed_ms": 117,
       "extra": {
         "final_url": "https://pypi.org/pypi/gradio/6.24.0/json",
         "content_length": "19211"
@@ -646,7 +652,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 84,571 bytes",
-      "elapsed_ms": 37,
+      "elapsed_ms": 112,
       "extra": {
         "final_url": "https://pypi.org/pypi/sentencepiece/0.2.2/json",
         "content_length": "84571"
@@ -663,7 +669,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 22,027 bytes",
-      "elapsed_ms": 85,
+      "elapsed_ms": 202,
       "extra": {
         "final_url": "https://pypi.org/pypi/bertviz/1.4.1/json",
         "content_length": "22027"
@@ -680,7 +686,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 20,891 bytes",
-      "elapsed_ms": 93,
+      "elapsed_ms": 114,
       "extra": {
         "final_url": "https://pypi.org/pypi/sentence-transformers/5.7.0/json",
         "content_length": "20891"
@@ -697,7 +703,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 22,379 bytes",
-      "elapsed_ms": 91,
+      "elapsed_ms": 97,
       "extra": {
         "final_url": "https://pypi.org/pypi/accelerate/1.14.0/json",
         "content_length": "22379"
@@ -714,7 +720,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 22,104 bytes",
-      "elapsed_ms": 88,
+      "elapsed_ms": 101,
       "extra": {
         "final_url": "https://pypi.org/pypi/diffusers/0.39.0/json",
         "content_length": "22104"
@@ -731,7 +737,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 6,021 bytes",
-      "elapsed_ms": 91,
+      "elapsed_ms": 100,
       "extra": {
         "final_url": "https://pypi.org/pypi/gTTS/2.5.4/json",
         "content_length": "6021"
@@ -748,7 +754,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 10,476 bytes",
-      "elapsed_ms": 83,
+      "elapsed_ms": 110,
       "extra": {
         "final_url": "https://pypi.org/pypi/librosa/0.11.0/json",
         "content_length": "10476"
@@ -765,7 +771,7 @@
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 3,857 bytes",
-      "elapsed_ms": 27,
+      "elapsed_ms": 113,
       "extra": {
         "final_url": "https://pypi.org/pypi/ffmpeg-python/0.2.0/json",
         "content_length": "3857"
@@ -775,14 +781,14 @@
       "id": "pypi-tfds-4-9-10",
       "category": "pypi",
       "name": "고정 판번호 tensorflow-datasets 4.9.10",
-      "section": "VI-4;VI-5",
+      "section": "VI-4",
       "severity": "critical",
       "check": "http",
       "url": "https://pypi.org/pypi/tensorflow-datasets/4.9.10/json",
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 11,413 bytes",
-      "elapsed_ms": 92,
+      "elapsed_ms": 111,
       "extra": {
         "final_url": "https://pypi.org/pypi/tensorflow-datasets/4.9.10/json",
         "content_length": "11413"
@@ -792,14 +798,14 @@
       "id": "pypi-tf-metadata-1-17-3",
       "category": "pypi",
       "name": "고정 판번호 tensorflow-metadata 1.17.3",
-      "section": "VI-4;VI-5",
+      "section": "VI-4",
       "severity": "critical",
       "check": "http",
       "url": "https://pypi.org/pypi/tensorflow-metadata/1.17.3/json",
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 3,889 bytes",
-      "elapsed_ms": 135,
+      "elapsed_ms": 103,
       "extra": {
         "final_url": "https://pypi.org/pypi/tensorflow-metadata/1.17.3/json",
         "content_length": "3889"
@@ -809,14 +815,14 @@
       "id": "pypi-importlib-resources-7-1-0",
       "category": "pypi",
       "name": "고정 판번호 importlib_resources 7.1.0",
-      "section": "VI-4;VI-5",
+      "section": "VI-4",
       "severity": "critical",
       "check": "http",
       "url": "https://pypi.org/pypi/importlib_resources/7.1.0/json",
       "status": "OK",
       "http_status": 200,
       "detail": "HTTP 200 · 6,084 bytes",
-      "elapsed_ms": 86,
+      "elapsed_ms": 115,
       "extra": {
         "final_url": "https://pypi.org/pypi/importlib_resources/7.1.0/json",
         "content_length": "6084"
